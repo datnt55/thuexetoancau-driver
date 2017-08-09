@@ -1,0 +1,92 @@
+<resources>
+    <string name="app_name">NoiCarDriver</string>
+
+    <string name="splash_text">Đang load dữ liệu. Đảm bảo bạn đang kết nối mạng</string>
+    <string name="telephone">Số điện thoại</string>
+    <string name="password">Mật khẩu</string>
+    <string name="error_network">Bạn chưa kết nối mạng</string>
+    <string name="try_again">Thử lại</string>
+    <string name="exit">Thoát</string>
+    <string name="register_failure">Đăng ký thất bại</string>
+    <string name="haggle">Đặt giá</string>
+    <string name="text_price_notice">Giá bạn trả phải lớn hơn giá mua ngay</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Hủy</string>
+    <string name="notice_close_app">Bấm lần nữa để thoát</string>
+
+    <string name="select_action">Chọn hoạt động</string>
+
+    <!-- List passenger booking activity -->
+    <string name="information">Thông tin</string>
+    <string name="map">Bản đồ</string>
+    <string name="check_connection">Vui lòng kiểm tra lại kết nối</string>
+
+    <!-- GPS Dialog-->
+    <string name="notice">Thông báo</string>
+    <string name="gps_notice_content">Chức năng này cần lấy vị trí hiện tại của bạn.Bạn có muốn bật định vị</string>
+    <string name="gps_continue">Tiếp tục</string>
+    <string name="gps_no">Không</string>
+    <string name="getting_location">Đang lấy vị trí...</string>
+
+    <!-- Passdenger booking fragment-->
+    <string name="notice_no_gps"> Bạn phải bật chức năng định vị để dùng chức năng này</string>
+
+    <!-- Map Passdenger booking fragment-->
+    <string name="loading_data"> Đang tải dữ liệu</string>
+    <string name="distance_meter"> %1$d m</string>
+    <string name="distance_kilo_meter"> %1$d km</string>
+    <string name="distance_car"> Xe cách bạn %1$s</string>
+
+    <!-- layout search bar -->
+    <string name="last_search">CÁC TÌM KIẾM TRƯỚC</string>
+    <string name="recommend_search">ĐỊA ĐIỂM GỢI Ý</string>
+
+    <!-- layout direction -->
+    <string name="current_location">Vị trí của bạn</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="login_facebook">Đăng nhập qua Facebook</string>
+    <string name="login_google">Đăng nhập qua Google</string>
+    <string name="login_phone">Sử dụng số điện thoại</string>
+
+    <string name="facebook_app_id">154472745109695</string>
+    <string name="fb_login_protocol_scheme">fb154472745109695</string>
+
+    <string name="title_register">Vui lòng điền thông tin, Chỉ có tài xế đón bạn thấy thông tin của bạn</string>
+    <string name="login_message">Nếu bạn đã có tài khoản, Vui lòng nhập vào số điện thoại</string>
+    <string name="login_message_dialog">Đang đăng nhập</string>
+    <string name="register_policy">Bằng việc đăng ký, tôi đã đọc và đồng ý với Điều khoản Sử dụng và Chính sách bảo mật</string>
+    <string name="not_have_account">Bạn chưa có tài khoản? Hãy bấm vào đây</string>
+    <string name="register_message">Đang tạo tài khoản. Vui lòng đợi</string>
+    <string name="register_error">Đăng ký thất bại, Vui lòng kiểm tra kết nối mạng</string>
+    <string name="network_error">Vui lòng kiểm tra kết nối mạng</string>
+    <string name="edit_customer_message">Đang cập nhật thông tin. Vui lòng đợi</string>
+    <string name="edit_customer_error">Sửa thông tin thất bại, Vui lòng kiểm tra kết nối mạng</string>
+    <string name="prepare_cost_of_trip">Đang xác nhận thông tin</string>
+    <string name="prepare_data">Đang chuẩn bị dữ liệu</string>
+    <string name="log_out">Đang đăng xuất</string>
+    <string name="log_out_success">Đăng xuất thành công</string>
+    <string name="log_out_error">Đăng xuất thất bại</string>
+    <string name="name_of_customer">Tên hành khách</string>
+    <string name="phone_of_customer">Số điện thoại hành khách</string>
+    <string name="error_time_start">Chọn thời gian khởi hành</string>
+    <string name="error_time_back">Chọn thời gian khứ hồi</string>
+    <string name="logout_content_dialog">Bạn chắc chắn muốn đăng xuất?</string>
+    <string name="check_token_content_dialog">Ai đó đã đăng nhập vào tài khoản của bạn</string>
+    <string name="rating_title">Đánh giá chuyến đi</string>
+    <string name="rating_content">Hãy để lại đánh giá của bạn để chúng tôi có thể phát triển hơn. Xin cảm ơn</string>
+    <string name="booking_car_message">Đang đăng ký chuyến xe</string>
+    <string name="booking_car_error">Đặt xe thất bại</string>
+    <string name="booking_cancel_message">Bạn hãy nhập lý do hủy chuyến</string>
+    <string name="digit_message">Mã số đã đươc gửi vào số $s</string>
+    <string name="digit_no_get_sms">Chưa nhận được SMS?</string>
+    <string name="digit_re_send">Gửi lại</string>
+    <string name="invalid_phone_number">Số điện thoại của bạn không khả dụng</string>
+    <string name="exceeded_request">Số yêu cầu vượt quá sự cho phép. Vui lòng chờ trong ít phút</string>
+</resources>
+

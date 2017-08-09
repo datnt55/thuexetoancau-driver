@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "136271288279",
+    "firebase_url": "https://noicardriver-f2a86.firebaseio.com",
+    "project_id": "noicardriver-f2a86",
+    "storage_bucket": "noicardriver-f2a86.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136271288279:android:c8829c3aeb16b66a",
+        "android_client_info": {
+          "package_name": "grab.com.thuexetoancau.driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "136271288279-8de979qfeqrbmmu8nqhgiq4760joucqu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "grab.com.thuexetoancau.driver",
+            "certificate_hash": "6b8d317b144a20040b5b3fd6764b918282f2fd9e"
+          }
+        },
+        {
+          "client_id": "136271288279-0fl86v7dee20qqmfuk8m005hm10t1dg8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsqfhPi785zN42JUaM0E63RkIeKsEUmkw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "136271288279-0fl86v7dee20qqmfuk8m005hm10t1dg8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
