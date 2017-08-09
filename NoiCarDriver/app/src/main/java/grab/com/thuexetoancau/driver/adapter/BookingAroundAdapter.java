@@ -1,20 +1,22 @@
 package grab.com.thuexetoancau.driver.adapter;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.model.Trip;
+import grab.com.thuexetoancau.driver.utilities.CommonUtilities;
 
 
 /**
@@ -23,12 +25,12 @@ import grab.com.thuexetoancau.driver.model.Trip;
 
 public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdapter.ViewHolder> {
     private Context mContext;
-    private List<Trip> arrayVehicle;
+    private List<Trip> arrayTrip;
     private OnItemClickListener listener;
 
     public BookingAroundAdapter(Context context, ArrayList<Trip> vehicle) {
         mContext = context;
-        this.arrayVehicle = vehicle;
+        this.arrayTrip = vehicle;
     }
 
     public void setOnClickListener(OnItemClickListener listener){
@@ -37,53 +39,24 @@ public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdap
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        Log.d(LOG_TAG, "ON create view holder " + i);
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_transportation, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_list_car_booking, viewGroup, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-       holder.imgTransport.setImageResource(arrayVehicle.get(position).getImage());
-        holder.txtCarName.setText(arrayVehicle.get(position).getName());
-        holder.txtPrice.setText(CommonUtilities.convertCurrency(arrayVehicle.get(position).getTotalPrice())+" vnđ");
-        if (arrayVehicle.get(position).isSelected()) {
-            holder.layoutRoot.setBackground(ContextCompat.getDrawable(mContext, R.drawable.vehicle_shape_selected));
-            holder.txtCarName.setTextColor(ContextCompat.getColor(mContext, R.color.white));
-            holder.txtPrice.setTextColor(ContextCompat.getColor(mContext, R.color.white));
-            holder.imgTransport.setColorFilter(ContextCompat.getColor(mContext,R.color.white));
-        }else {
-            holder.layoutRoot.setBackground(ContextCompat.getDrawable(mContext, R.drawable.vehicle_shape));
-            holder.txtCarName.setTextColor(ContextCompat.getColor(mContext, R.color.blue_light));
-            holder.txtPrice.setTextColor(ContextCompat.getColor(mContext, R.color.blue_light));
-            holder.imgTransport.setColorFilter(ContextCompat.getColor(mContext,R.color.blue_light));
-        }
-        holder.layoutRoot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clearSelectAllCar();
-                arrayVehicle.get(position).setSelected(!arrayVehicle.get(position).isSelected());
-                if (arrayVehicle.get(position).isSelected()) {
-                    holder.layoutRoot.setBackground(ContextCompat.getDrawable(mContext, R.drawable.vehicle_shape_selected));
-                    holder.txtCarName.setTextColor(ContextCompat.getColor(mContext, R.color.white));
-                    holder.txtPrice.setTextColor(ContextCompat.getColor(mContext, R.color.white));
-                }else {
-                    holder.layoutRoot.setBackground(ContextCompat.getDrawable(mContext, R.drawable.vehicle_shape));
-                    holder.txtCarName.setTextColor(ContextCompat.getColor(mContext, R.color.blue_light));
-                    holder.txtPrice.setTextColor(ContextCompat.getColor(mContext, R.color.blue_light));
-                }
-                if (listener != null)
-                    listener.onClicked(arrayVehicle.get(position));
-                notifyDataSetChanged();
-            }
-        });
-
+       holder.txtSource.setText(arrayTrip.get(position).getListStopPoints().get(0).getFullPlace());
+        int size = arrayTrip.get(position).getListStopPoints().size();
+        holder.txtDestination.setText(arrayTrip.get(position).getListStopPoints().get(size-1).getFullPlace());
+        holder.txtCarSize.setText(arrayTrip.get(position).getCarSize()+" chỗ");
+        holder.txtTripType.setText(CommonUtilities.getTripType(arrayTrip.get(position).getTripType()));
+        holder.txtCustomer.setText(arrayTrip.get(position).getCustomerName());
     }
 
     @Override
     public int getItemCount() {
-        if (arrayVehicle == null) return 0;
-        else return arrayVehicle.size();
+        if (arrayTrip == null) return 0;
+        else return arrayTrip.size();
     }
 
     @Override
@@ -93,21 +66,27 @@ public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdap
 
 
     public class ViewHolder extends RecyclerView.ViewHolder  {
-        ImageView imgTransport;
-        TextView txtCarName;
-        TextView txtPrice;
-        LinearLayout layoutRoot;
+        TextView txtSource;
+        TextView txtDestination;
+        TextView txtCarSize;
+        TextView txtTripType;
+        ImageView imgAccept;
+        TextView txtCustomer;
+        TextView txtStartTime;
+        TextView txtBackTime;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            layoutRoot = (LinearLayout) itemView.findViewById(R.id.layout_root);
-            imgTransport = (ImageView) itemView.findViewById(R.id.img_transport);
-            txtCarName = (TextView) itemView.findViewById(R.id.txt_car_name);
-            txtPrice = (TextView) itemView.findViewById(R.id.txt_price);
+            txtSource = (TextView) itemView.findViewById(R.id.txt_from);
+            txtDestination = (TextView) itemView.findViewById(R.id.txt_to);
+            txtCarSize = (TextView) itemView.findViewById(R.id.txt_car_type);
+            txtTripType = (TextView) itemView.findViewById(R.id.txt_trip_type);
+            txtCustomer = (TextView) itemView.findViewById(R.id.txt_customer_name);
+            imgAccept = (ImageView) itemView.findViewById(R.id.btn_accept);
         }
     }
 
     public interface OnItemClickListener{
-        void onClicked(Car car);
+        void onClicked(Trip trip);
     }
 }
