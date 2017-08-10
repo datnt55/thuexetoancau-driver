@@ -214,8 +214,8 @@ public class ApiUtilities {
             int carSize = booking.getInt("car_size");
             String startPointName = booking.getString("start_point_name");
             String listEndPointName = booking.getString("list_end_point_name");
-            long startPointLon = booking.getLong("start_point_lon");
-            long startPointLat = booking.getLong("start_point_lat");
+            double startPointLon = booking.getDouble("start_point_lon");
+            double startPointLat = booking.getDouble("start_point_lat");
             String listEndPointLon = booking.getString("list_end_point_lon");
             String listEndPointLat = booking.getString("list_end_point_lat");
             String listEndPoin = booking.getString("list_end_point");

@@ -10,7 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -62,6 +64,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
     private CustomerInfoLayout layoutCustomer;
     private Context mContext;
     private Toolbar toolbar;
+    private TextView txtCustomerName, txtSource, txtDestination, txtNote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +76,36 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         }
         SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         map.getMapAsync(this);
+        initComponents();
+    }
+
+    private void initComponents(){
         layoutCustomer = (CustomerInfoLayout) findViewById(R.id.fragment_customer_infor);
+        txtCustomerName = (TextView) layoutCustomer.findViewById(R.id.customer_name);
+        txtSource = (TextView) layoutCustomer.findViewById(R.id.customer_from);
+        txtDestination = (TextView) layoutCustomer.findViewById(R.id.customer_to);
+        txtNote = (TextView) layoutCustomer.findViewById(R.id.customer_note);
+
+        txtCustomerName.setText(customerTrip.getCustomerName());
+        txtSource.setText(customerTrip.getListStopPoints().get(0).getFullPlace());
+        int size = customerTrip.getListStopPoints().size();
+        txtDestination.setText(customerTrip.getListStopPoints().get(size - 1).getFullPlace());
+        txtNote.setText(customerTrip.getNote());
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Chi tiết chuyến đi");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -115,14 +144,14 @@ public class AcceptBookingActivity extends AppCompatActivity implements
             currentLocation.remove();
         currentLocation = mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude,longitude))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.car))
                 .title("Vị trí của bạn"));
-        markerList.add(currentLocation);
-        CameraPosition cameraPosition = new CameraPosition.Builder()
+      /*  CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(currentLocation.getPosition())             // Sets the center of the map to current location
                 .zoom(16)                   // Sets the zoom
                 .tilt(45)                   // Sets the tilt of the camera to 0 degrees
                 .build();                   // Creates a CameraPosition from the builder
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
         sendRequestFindDirection();
     }
 
