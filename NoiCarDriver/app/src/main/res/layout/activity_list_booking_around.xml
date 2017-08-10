@@ -1,17 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/drawer_layout"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:fitsSystemWindows="false"
+tools:openDrawer="start">
+
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="grab.com.thuexetoancau.driver.activities.ListBookingAroundActivity">
+    tools:context="grab.com.thuexetoancau.activity.MainActivity">
 
-    <include layout="@layout/common_header" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list_booking_around"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="grab.com.thuexetoancau.driver.activities.ListBookingAroundActivity">
 
-</LinearLayout>
+        <include layout="@layout/common_header" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_booking_around"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <RelativeLayout
+            android:id="@+id/layout_no_booking"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/layout_no_booking_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tint="@color/grey_1"
+                    app:srcCompat="@drawable/ic_local_car_wash_black_24dp" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="16sp"
+                    android:layout_toRightOf="@+id/imageView3"
+                    android:text="@string/no_booking_message" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/txt_try_again"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/blue_light"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_below="@+id/layout_no_booking_message"
+                android:text="@string/try_again" />
+        </RelativeLayout>
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
+
+<android.support.design.widget.NavigationView
+    android:id="@+id/nav_view"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    app:headerLayout="@layout/nav_header_main"
+    app:menu="@menu/activity_main_drawer"/>
+</android.support.v4.widget.DrawerLayout>

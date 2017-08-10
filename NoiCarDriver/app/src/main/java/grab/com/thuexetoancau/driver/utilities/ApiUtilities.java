@@ -155,8 +155,8 @@ public class ApiUtilities {
         dialog.show();
         RequestParams params;
         params = new RequestParams();
-        params.put("lat",21.024918);
-        params.put("lon",105.837676);
+        params.put("lat",lat);
+        params.put("lon",lon);
         Log.e("params deleteDelivery", params.toString());
         BaseService.getHttpClient().post(Defines.URL_LIST_BOOKING_AROUND,params, new AsyncHttpResponseHandler() {
 
@@ -253,8 +253,8 @@ public class ApiUtilities {
             String[] arrEndPointName = listEndPointName.split("_");
             String[] arrEndPointGeo = listEndPoin.split("_");
             for (int i = 0 ; i <arrEndPointName.length; i++){
-                double lat = 0; //Double.valueOf(arrEndPointGeo[i].split(",")[0]);
-                double lon = 0; //Double.valueOf(arrEndPointGeo[i].split(",")[1]);
+                double lat = Double.valueOf(arrEndPointGeo[i].split(",")[0]);
+                double lon = Double.valueOf(arrEndPointGeo[i].split(",")[1]);
                 Position position = new Position(arrEndPointName[i],new LatLng(lat,lon));
                 listStopPoint.add(position);
             }

@@ -2,15 +2,18 @@ package grab.com.thuexetoancau.driver.model;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
+
 /**
  * Created by DatNT on 7/18/2017.
  */
 
-public class Position {
+public class Position implements Serializable{
     private String placeId;
     private String primaryText;
     private String secondText;
-    private LatLng latLng;
+    private double lat;
+    private double lon;
     private String fullPlace;
     public Position(String placeId, String primaryText, String secondText) {
         this.placeId = placeId;
@@ -20,7 +23,8 @@ public class Position {
     }
 
     public Position(String fullPath, LatLng latLng) {
-        this.latLng = latLng;
+        this.lat = latLng.latitude;
+        this.lon = latLng.longitude;
         this.fullPlace = fullPath;
     }
 
@@ -48,14 +52,6 @@ public class Position {
         this.secondText = secondText;
     }
 
-    public LatLng getLatLng() {
-        return latLng;
-    }
-
-    public void setLatLng(LatLng latLng) {
-        this.latLng = latLng;
-    }
-
     public String getFullPlace() {
         return fullPlace;
     }
@@ -65,6 +61,26 @@ public class Position {
     }
 
     public String getLatLngToString() {
-        return latLng.latitude + ","+ latLng.longitude;
+        return lat + ","+ lon;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
+    }
+
+    public LatLng getLatLng() {
+        return new LatLng(lat, lon);
     }
 }

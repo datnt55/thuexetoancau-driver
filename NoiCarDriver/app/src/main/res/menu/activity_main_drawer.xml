@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_lock_black_24dp"
+            android:title="Yêu thích"/>
+        <item
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/ic_lock_black_24dp"
+            android:title="Lịch sử"/>
+        <item
+            android:id="@+id/nav_manage"
+            android:icon="@drawable/ic_lock_black_24dp"
+            android:title="Lịch trình"/>
+        <item
+            android:id="@+id/nav_slideshow"
+            android:icon="@drawable/ic_lock_black_24dp"
+            android:title="Thông báo"/>
+        <item
+            android:id="@+id/nav_gift"
+            android:icon="@drawable/ic_lock_black_24dp"
+            android:title="Mời bạn bè"/>
+        <item
+            android:id="@+id/nav_support"
+            android:icon="@drawable/ic_lock_black_24dp"
+            android:title="Hỗ trợ"/>
+        <item
+            android:id="@+id/nav_log_out"
+            android:icon="@drawable/ic_lock_black_24dp"
+            android:title="Đăng xuất"/>
+    </group>
+</menu>

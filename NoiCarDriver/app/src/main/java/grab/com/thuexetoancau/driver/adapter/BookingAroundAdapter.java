@@ -51,6 +51,13 @@ public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdap
         holder.txtCarSize.setText(arrayTrip.get(position).getCarSize()+" chỗ");
         holder.txtTripType.setText(CommonUtilities.getTripType(arrayTrip.get(position).getTripType()));
         holder.txtCustomer.setText(arrayTrip.get(position).getCustomerName());
+        holder.imgAccept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null)
+                    listener.onClicked(arrayTrip.get(position));
+            }
+        });
     }
 
     @Override
