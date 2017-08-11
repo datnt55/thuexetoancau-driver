@@ -273,6 +273,63 @@ public class ApiUtilities {
         return trip;
     }
 
+    public void receivedTrip(double bookingId, double driverId, final AroundBookingListener listener) {
+        final ProgressDialog dialog = new ProgressDialog(mContext);
+        dialog.setMessage("Đang tải dữ liệu");
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.show();
+        RequestParams params;
+        params = new RequestParams();
+        params.put("id_booking",bookingId);
+        params.put("driver_id",driverId);
+        Log.e("params deleteDelivery", params.toString());
+        BaseService.getHttpClient().post(Defines.URL_RECEIVE_TRIP,params, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+                // called when response HTTP status is "200 OK"
+                Log.i("JSON", new String(responseBody));
+                try {
+                    JSONObject json = new JSONObject(new String(responseBody));
+                    if (json.getString("status").equals("success")){
+                        ArrayList<Trip> arrayTrip = new ArrayList<Trip>();
+                        JSONArray array = json.getJSONArray("data");
+                        JSONObject data = array.getJSONObject(0);
+                        JSONArray bookingList = data.getJSONArray("bookinglist");
+                        for (int i = 0 ; i < bookingList.length(); i++) {
+                            JSONObject booking = bookingList.getJSONObject(i);
+                            Trip trip = parseBookingData(booking);
+                            arrayTrip.add(trip);
+                        }
+                        if (listener != null)
+                            listener.onSuccess(arrayTrip);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    if (listener != null)
+                        listener.onSuccess(null);
+                }
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+                dialog.dismiss();
+            }
+        });
+    }
+
     public interface LoginResponseListener {
         void onSuccess();
     }

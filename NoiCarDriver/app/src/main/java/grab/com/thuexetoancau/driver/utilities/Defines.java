@@ -13,6 +13,7 @@ public class Defines {
     public static  final String URL_POST_DRIVER_GPS             = HOSTNAME + "api/postDriverGPS";
     public static  final String URL_LOGIN                       = HOSTNAME + "api/login";
     public static  final String URL_LIST_BOOKING_AROUND         = HOSTNAME + "api2/getListBookingNoiArround";
+    public static  final String URL_RECEIVE_TRIP                 = HOSTNAME + "api2/receivedTrip";
     public static  final String URL_CANCEL_TRIP                 = HOSTNAME + "api2/driverCancelTrip";
     public static  final String URL_CONFIRM_TRIP                = HOSTNAME + "api2/confirmTrip";
     public static  final String URL_NO_ACCEPT_TRIP              = HOSTNAME + "api2/noReceivedTrip ";
@@ -42,12 +43,7 @@ public class Defines {
 
 
     public static  final String DIALOG_CONFIRM_TRIP              = "trip";
-
-    public static int MAX_DISTANCE                              = 50000;
-    public static int MIN_CURRENT_DISTANCE                      = 20;
     public static final int REQUEST_CODE_PICKER                 = 100;
-    public static final int TIME_BEFORE_AUCTION_LONG                 = 5*60*60*1000;
-    public static final int TIME_BEFORE_AUCTION_SHORT                 = 1*60*60*1000;
     public static final int REQUEST_CODE_LOCATION_PERMISSIONS = 234;
     public static final int REQUEST_CODE_CONTACT_PERMISSIONS = 235;
     public static final LatLngBounds BOUNDS_MOUNTAIN_VIEW = new LatLngBounds(new LatLng(8.412730, 102.144410), new LatLng(23.393395, 109.468975));

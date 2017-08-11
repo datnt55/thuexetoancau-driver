@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.adapter.BookingAroundAdapter;
 import grab.com.thuexetoancau.driver.model.Trip;
+import grab.com.thuexetoancau.driver.thread.DriverLocation;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.DialogUtils;
@@ -74,6 +75,8 @@ public class ListBookingAroundActivity extends AppCompatActivity implements
             } else
                 getDataFromServer();
         }
+        Thread t = new Thread(new DriverLocation(this));
+        t.start();
     }
 
     private void getDataFromServer(){

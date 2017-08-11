@@ -49,9 +49,15 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void goToApplication() {
-        Intent i = new Intent(SplashActivity.this, LoginActivity.class);
-        startActivity(i);
-        finish();
+        if (preference.getDriverId() != 0){
+            Intent i = new Intent(SplashActivity.this, ListBookingAroundActivity.class);
+            startActivity(i);
+            finish();
+        }else {
+            Intent i = new Intent(SplashActivity.this, LoginActivity.class);
+            startActivity(i);
+            finish();
+        }
     }
 
 
