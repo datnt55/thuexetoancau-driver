@@ -1,11 +1,18 @@
 package grab.com.thuexetoancau.driver.activities;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -58,6 +65,7 @@ import grab.com.thuexetoancau.driver.widget.CustomerInfoLayout;
 public class AcceptBookingActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
+        BottomNavigationView.OnNavigationItemSelectedListener,
         DirectionFinderListener,
         OnMapReadyCallback{
 
@@ -71,6 +79,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
     private Context mContext;
     private Toolbar toolbar;
     private TextView txtCustomerName, txtSource, txtDestination, txtNote;
+    private BottomNavigationView navigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +100,9 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         txtSource = (TextView) layoutCustomer.findViewById(R.id.customer_from);
         txtDestination = (TextView) layoutCustomer.findViewById(R.id.customer_to);
         txtNote = (TextView) layoutCustomer.findViewById(R.id.customer_note);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
 
+        navigation.setOnNavigationItemSelectedListener(this);
         txtCustomerName.setText(customerTrip.getCustomerName());
         txtSource.setText(customerTrip.getListStopPoints().get(0).getFullPlace());
         int size = customerTrip.getListStopPoints().size();
@@ -231,5 +242,22 @@ public class AcceptBookingActivity extends AppCompatActivity implements
             polylinePaths.add(mMap.addPolyline(polylineOptions1));
         }
         updateMapCamera();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.navigation_call:
+                Intent callIntent = new Intent(Intent.ACTION_CALL,Uri.parse("tel:"+customerTrip.getCustomerPhone()));
+                startActivity(callIntent);
+                break;
+            case R.id.navigation_cancel:
+                break;
+            case R.id.navigation_welcome:
+                break;
+        }
+
+        return true;
     }
 }

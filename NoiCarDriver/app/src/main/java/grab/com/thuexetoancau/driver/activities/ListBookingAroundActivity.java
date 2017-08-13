@@ -3,8 +3,11 @@ package grab.com.thuexetoancau.driver.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,9 +29,11 @@ import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.DialogUtils;
 import grab.com.thuexetoancau.driver.utilities.GPSTracker;
+import grab.com.thuexetoancau.driver.widget.AcceptBookDialog;
 
-public class ListBookingAroundActivity extends AppCompatActivity implements
+public class ListBookingAroundActivity extends BaseActivity implements
         BookingAroundAdapter.OnItemClickListener,
+        SwipeRefreshLayout.OnRefreshListener,
         NavigationView.OnNavigationItemSelectedListener,
         View.OnClickListener{
     private RecyclerView listAroundBooking;
@@ -40,6 +45,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements
     private Toolbar toolbar;
     private RelativeLayout layoutNoBooking;
     private TextView tryAgain;
+    private SwipeRefreshLayout swipeRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +60,12 @@ public class ListBookingAroundActivity extends AppCompatActivity implements
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Chuyến xe quanh đây");
+        swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_booking_around);
+        swipeRefresh.setOnRefreshListener(this);
         layoutNoBooking = (RelativeLayout) findViewById(R.id.layout_no_booking);
         tryAgain = (TextView) findViewById(R.id.txt_try_again);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -83,10 +90,12 @@ public class ListBookingAroundActivity extends AppCompatActivity implements
         mApi.getBookingAround(gpsTracker.getLatitude(), gpsTracker.getLongitude(), new ApiUtilities.AroundBookingListener() {
             @Override
             public void onSuccess(ArrayList<Trip> arrayTrip) {
+                swipeRefresh.setRefreshing(false);
                 if (arrayTrip == null){
                     showNoBookingLayout();
                     return;
                 }
+                showBookingLayout();
                 listTrip = arrayTrip;
                 adapter = new BookingAroundAdapter(mContext, listTrip);
                 listAroundBooking.setAdapter(adapter);
@@ -97,9 +106,15 @@ public class ListBookingAroundActivity extends AppCompatActivity implements
 
     private void showNoBookingLayout() {
         layoutNoBooking.setVisibility(View.VISIBLE);
-        listAroundBooking.setVisibility(View.GONE);
+        swipeRefresh.setVisibility(View.GONE);
         tryAgain.setOnClickListener(this);
     }
+
+    private void showBookingLayout() {
+        layoutNoBooking.setVisibility(View.GONE);
+        swipeRefresh.setVisibility(View.VISIBLE);
+    }
+
 
     @Override
     public void onClicked(Trip trip) {
@@ -147,5 +162,11 @@ public class ListBookingAroundActivity extends AppCompatActivity implements
                 getDataFromServer();
                 break;
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        swipeRefresh.setRefreshing(true);
+        getDataFromServer();
     }
 }

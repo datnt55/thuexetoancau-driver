@@ -21,7 +21,9 @@ public class Position implements Serializable{
         this.secondText = secondText;
         this.fullPlace = primaryText +", "+secondText;
     }
-
+    public Position(String fullPath) {
+        this.fullPlace = fullPath;
+    }
     public Position(String fullPath, LatLng latLng) {
         this.lat = latLng.latitude;
         this.lon = latLng.longitude;

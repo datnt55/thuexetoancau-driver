@@ -64,7 +64,6 @@
                     android:id="@+id/img_from"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     app:srcCompat="@drawable/ic_radio_button_checked_black_24dp" />
 
                 <TextView
@@ -79,6 +78,13 @@
                     android:text="TextView" />
 
             </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/imageView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                app:srcCompat="@drawable/ic_more_vert_black_24dp" />
 
             <RelativeLayout
                 android:layout_width="match_parent"

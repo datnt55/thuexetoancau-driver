@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:gravity="center_horizontal"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@color/blue_light"
+        android:padding="20dp"
+        android:layout_marginBottom="15dp"
+        android:orientation="vertical">
+
+        <grab.com.thuexetoancau.driver.widget.ArcProgress
+            android:id="@+id/arc_progress"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            custom:arc_bottom_text="Giây"
+            custom:arc_bottom_text_size="18sp"
+            custom:arc_text_color="@color/white"
+            custom:arc_max="30"
+            custom:arc_progress="0" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_price"
+        android:textColor="@color/blue_light"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:text="50.000 VNĐ" />
+
+    <TextView
+        android:id="@+id/txt_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_distance"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp"
+        android:text="1.8 km"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/text_source"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/black_light"
+        android:text="15 Phạm Hùng" />
+
+    <TextView
+        android:id="@+id/text_source_seconde"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="Mỹ Đình, Từ Liêm, Hà Nội" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <View
+            android:layout_width="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@+id/img_arrow_down"
+            android:background="@color/grey"
+            android:layout_marginLeft="20dp"
+            android:layout_height="1dp"/>
+        <View
+            android:id="@+id/img_arrow_down"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/circle" />
+        <ImageView
+
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerInParent="true"
+            custom:srcCompat="@drawable/ic_arrow_downward_black_24dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_toRightOf="@+id/img_arrow_down"
+            android:background="@color/grey"
+            android:layout_marginRight="20dp"
+            android:layout_height="1dp"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/txt_destination"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/black_light"
+        android:text="30 Bà Triệu" />
+
+    <TextView
+        android:id="@+id/txt_destination_second"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hoàn Kiếm, Hà Nội" />
+
+    <Button
+        android:id="@+id/btn_accept"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        style="@style/button_white_title_normal"
+        android:text="Nhận chuyến" />
+</LinearLayout>

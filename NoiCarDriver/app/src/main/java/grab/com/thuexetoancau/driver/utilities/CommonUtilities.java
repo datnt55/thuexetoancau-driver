@@ -47,12 +47,24 @@ public class CommonUtilities {
         float px = dp * (metrics.densityDpi / 160f);
         return px;
     }
+
+    public static float convertSpToPixel(Resources resources, float sp){
+        final float scale = resources.getDisplayMetrics().scaledDensity;
+        return sp * scale;
+    }
+
     public static float convertPixelsToDp(float px, Context context){
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return dp;
     }
+
+    public static float dp2px(Resources resources, float dp) {
+        final float scale = resources.getDisplayMetrics().density;
+        return  dp * scale + 0.5f;
+    }
+
     public static int getStatusBarHeight(Activity activity) {
         int result = 0;
         int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");

@@ -26,11 +26,15 @@ tools:openDrawer="start">
         tools:context="grab.com.thuexetoancau.driver.activities.ListBookingAroundActivity">
 
         <include layout="@layout/common_header" />
-
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_booking_around"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/list_booking_around"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+        </android.support.v4.widget.SwipeRefreshLayout>
         <RelativeLayout
             android:id="@+id/layout_no_booking"
             android:layout_width="match_parent"

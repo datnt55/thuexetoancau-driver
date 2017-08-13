@@ -54,21 +54,20 @@ public class ApiUtilities {
                 Log.i("JSON", new String(responseBody));
                 dialog.dismiss();
                 try {
-                    JSONArray data = new JSONArray(new String(responseBody));
-                    if (data.length() == 0) {
-                        Toast.makeText(mContext, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
-                        return;
+                    JSONObject json = new JSONObject(new String(responseBody));
+                    if (json.getString("status").equals("success")){
+                        JSONArray array = json.getJSONArray("data");
+                        JSONObject data = array.getJSONObject(0);
+                        JSONObject driverData = data.getJSONObject("driver_data");
+                        saveVehicleInfor(driverData);
+                        if (listener != null)
+                            listener.onSuccess();
                     }
-                    Toast.makeText(mContext, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                    for (int i = 0; i < data.length(); i++) {
-                        JSONObject jsonobject = data.getJSONObject(i);
-                        saveVehicleInfor(jsonobject);
-                    }
-                    if (listener != null )
-                        listener.onSuccess();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+
 
             }
 
@@ -148,11 +147,6 @@ public class ApiUtilities {
     }
 
     public void getBookingAround(double lat, double lon, final AroundBookingListener listener) {
-        final ProgressDialog dialog = new ProgressDialog(mContext);
-        dialog.setMessage("Đang tải dữ liệu");
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
-        dialog.show();
         RequestParams params;
         params = new RequestParams();
         params.put("lat",lat);
@@ -189,17 +183,15 @@ public class ApiUtilities {
                     if (listener != null)
                         listener.onSuccess(null);
                 }
-                dialog.dismiss();
             }
 
             @Override
             public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
-                dialog.dismiss();
             }
 
             @Override
             public void onRetry(int retryNo) {
-                dialog.dismiss();
+
             }
         });
     }
@@ -330,6 +322,60 @@ public class ApiUtilities {
         });
     }
 
+    public void driverCancelTrip(double bookingId, int driverId, String driverPhone,String cancelReason, final CancelTripListener listener) {
+        final ProgressDialog dialog = new ProgressDialog(mContext);
+        dialog.setMessage("Đang tải dữ liệu");
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.show();
+        RequestParams params;
+        params = new RequestParams();
+        params.put("id_booking",bookingId);
+        params.put("driver_id",driverId);
+        params.put("driver_phone",driverPhone);
+        params.put("cancel_reason",cancelReason);
+        Log.e("params deleteDelivery", params.toString());
+        BaseService.getHttpClient().post(Defines.URL_RECEIVE_TRIP,params, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+                // called when response HTTP status is "200 OK"
+                Log.i("JSON", new String(responseBody));
+                JSONObject json = null;
+                try {
+                    json = new JSONObject(new String(responseBody));
+                    if (json.getString("status").equals("success")){
+                        if (listener != null)
+                            listener.onSuccess();
+                    }else{
+                        if (listener != null)
+                            listener.onFailure();
+                    }
+                    Toast.makeText(mContext,json.getString("message"),Toast.LENGTH_SHORT).show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+                dialog.dismiss();
+            }
+        });
+    }
+
     public interface LoginResponseListener {
         void onSuccess();
     }
@@ -340,4 +386,10 @@ public class ApiUtilities {
     public interface AroundBookingListener {
         void onSuccess(ArrayList<Trip> arrayTrip);
     }
+
+    public interface CancelTripListener {
+        void onSuccess();
+        void onFailure();
+    }
+
 }

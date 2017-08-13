@@ -62,6 +62,13 @@ public class Trip implements Serializable{
         this.carSize = carSize;
     }
 
+    public Trip(int id, ArrayList<Position> listStopPoints, int distance, int price) {
+        this.id = id;
+        this.listStopPoints = listStopPoints;
+        this.distance = distance;
+        this.price = price;
+    }
+
     public int getId() {
         return id;
     }

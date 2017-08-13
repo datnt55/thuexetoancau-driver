@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_home"
+        android:id="@+id/navigation_call"
         android:icon="@drawable/ic_call_black_24dp"
         android:title="@string/nav_call" />
 
     <item
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_cancel"
         android:icon="@drawable/ic_close_black_24dp"
         android:title="@string/nav_cancel" />
 
     <item
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_welcome"
         android:icon="@drawable/car_connected"
         android:title="@string/nav_ready" />
 

@@ -57,5 +57,8 @@ public class Defines {
     public static final String BUNDLE_TRIP = "bundle trip";
     // Main Screen Dimension, will be set when app startup
 
+    // Notification
+    public static final String FUNCTION_BOOK_GRAB = "bookingGrab";
+    public static final String CASE_FOUND_DRIVER = "founddriver";
 
 }
