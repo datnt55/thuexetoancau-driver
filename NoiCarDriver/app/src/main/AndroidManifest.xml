@@ -46,7 +46,8 @@
         <activity android:name=".activities.RegisterActivity" />
         <activity android:name=".activities.ListBookingAroundActivity" />
         <activity android:name=".activities.AcceptBookingActivity" />
-        <activity android:name=".activities.BaseActivity"></activity>
+        <activity android:name=".activities.BaseActivity" />
+        <activity android:name=".activities.ProgressTripActivity"></activity>
     </application>
 
 </manifest>

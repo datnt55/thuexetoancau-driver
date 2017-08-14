@@ -151,6 +151,7 @@ public class ApiUtilities {
         params = new RequestParams();
         params.put("lat",lat);
         params.put("lon",lon);
+        params.put("ready", 1);
         Log.e("params deleteDelivery", params.toString());
         BaseService.getHttpClient().post(Defines.URL_LIST_BOOKING_AROUND,params, new AsyncHttpResponseHandler() {
 

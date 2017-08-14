@@ -17,9 +17,9 @@ public class Defines {
     public static  final String URL_CANCEL_TRIP                 = HOSTNAME + "api2/driverCancelTrip";
     public static  final String URL_CONFIRM_TRIP                = HOSTNAME + "api2/confirmTrip";
     public static  final String URL_NO_ACCEPT_TRIP              = HOSTNAME + "api2/noReceivedTrip ";
-    public static  final String     URL_GET_CAR_TYPE            = HOSTNAME + "api/getListCarType";
-    public static  final String     URL_GET_CAR_MADE            = HOSTNAME + "api/getCarMadeList";
-    public static  final String     URL_GET_CAR_MODEL           = HOSTNAME + "api/getCarModelListFromMade";
+    public static  final String URL_GET_CAR_TYPE            = HOSTNAME + "api/getListCarType";
+    public static  final String URL_GET_CAR_MADE            = HOSTNAME + "api/getCarMadeList";
+    public static  final String URL_GET_CAR_MODEL           = HOSTNAME + "api/getCarModelListFromMade";
     public static  final String URL_GET_AIRPORT             = HOSTNAME + "api/getAirportName";
     public static  final String URL_BOOKING_LOG             = HOSTNAME + "api/bookingLog";
     public static  final String URL_GET_CAR_SIZE            = HOSTNAME + "api/getCarSize";
@@ -60,5 +60,6 @@ public class Defines {
     // Notification
     public static final String FUNCTION_BOOK_GRAB = "bookingGrab";
     public static final String CASE_FOUND_DRIVER = "founddriver";
+    public static final String CASE_NOT_FOUND_DRIVER = "founddriver";
 
 }

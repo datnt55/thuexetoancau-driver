@@ -99,13 +99,13 @@ public class SharePreference {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
         return sp.getString(CAR_NUMBER,"");
     }
-    public void saveStatus(int status) {
+    public synchronized void saveStatus(int status) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt(STATUS, status);
         editor.apply();
     }
-    public int getStatus() {
+    public synchronized int getStatus() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
         return sp.getInt(STATUS,0);
     }

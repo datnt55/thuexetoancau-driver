@@ -89,8 +89,12 @@
     <string name="invalid_phone_number">Số điện thoại của bạn không khả dụng</string>
     <string name="exceeded_request">Số yêu cầu vượt quá sự cho phép. Vui lòng chờ trong ít phút</string>
     <string name="no_booking_message">Không có khách nào ở xung quanh bạn</string>
+    <string name="you_re_offline">Bạn đang trong chế độ ngoại tuyến</string>
     <string name="nav_call">Gọi</string>
     <string name="nav_cancel">Hủy</string>
     <string name="nav_ready">Đón khách</string>
+
+    <string name="offline">Ngoại tuyến</string>
+    <string name="online">Trực tuyến</string>
 </resources>
 

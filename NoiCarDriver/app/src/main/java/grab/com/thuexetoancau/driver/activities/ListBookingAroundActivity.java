@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -29,6 +31,7 @@ import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.DialogUtils;
 import grab.com.thuexetoancau.driver.utilities.GPSTracker;
+import grab.com.thuexetoancau.driver.utilities.SharePreference;
 import grab.com.thuexetoancau.driver.widget.AcceptBookDialog;
 
 public class ListBookingAroundActivity extends BaseActivity implements
@@ -44,7 +47,7 @@ public class ListBookingAroundActivity extends BaseActivity implements
     private Context mContext;
     private Toolbar toolbar;
     private RelativeLayout layoutNoBooking;
-    private TextView tryAgain;
+    private TextView txtNoBookMessage, tryAgain;
     private SwipeRefreshLayout swipeRefresh;
 
     @Override
@@ -53,6 +56,17 @@ public class ListBookingAroundActivity extends BaseActivity implements
         setContentView(R.layout.activity_list_booking_around);
         mApi = new ApiUtilities(this);
         mContext = this;
+        if (getIntent().hasExtra(Defines.BUNDLE_TRIP)){
+            Trip trip = (Trip) getIntent().getSerializableExtra(Defines.BUNDLE_TRIP);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            AcceptBookDialog dialog = new AcceptBookDialog();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(Defines.BUNDLE_TRIP,trip);
+            dialog.setArguments(bundle);
+            dialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
+            dialog.setCancelable(false);
+            dialog.show(fragmentManager, "Input Dialog");
+        }
         initComponents();
     }
 
@@ -64,6 +78,7 @@ public class ListBookingAroundActivity extends BaseActivity implements
         swipeRefresh.setOnRefreshListener(this);
         layoutNoBooking = (RelativeLayout) findViewById(R.id.layout_no_booking);
         tryAgain = (TextView) findViewById(R.id.txt_try_again);
+        txtNoBookMessage = (TextView) findViewById(R.id.txt_no_book_message);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -87,6 +102,11 @@ public class ListBookingAroundActivity extends BaseActivity implements
     }
 
     private void getDataFromServer(){
+        SharePreference preference = new SharePreference(this);
+        if (preference.getStatus() == 1){
+            showNoBookingLayout();
+            return;
+        }
         mApi.getBookingAround(gpsTracker.getLatitude(), gpsTracker.getLongitude(), new ApiUtilities.AroundBookingListener() {
             @Override
             public void onSuccess(ArrayList<Trip> arrayTrip) {
@@ -107,7 +127,16 @@ public class ListBookingAroundActivity extends BaseActivity implements
     private void showNoBookingLayout() {
         layoutNoBooking.setVisibility(View.VISIBLE);
         swipeRefresh.setVisibility(View.GONE);
-        tryAgain.setOnClickListener(this);
+        SharePreference preference = new SharePreference(this);
+        if (preference.getStatus() == 1){
+            txtNoBookMessage.setText(getString(R.string.you_re_offline));
+            tryAgain.setVisibility(View.GONE);
+        }else{
+            txtNoBookMessage.setText(getString(R.string.no_booking_message));
+            tryAgain.setVisibility(View.VISIBLE);
+            tryAgain.setOnClickListener(this);
+        }
+
     }
 
     private void showBookingLayout() {
@@ -139,8 +168,12 @@ public class ListBookingAroundActivity extends BaseActivity implements
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
+        if (id == R.id.nav_log_out) {
+            SharePreference preference = new SharePreference(this);
+            preference.saveDriverId(0);
+            Intent intent = new Intent(mContext, SplashActivity.class);
+            startActivity(intent);
+            finish();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -169,4 +202,45 @@ public class ListBookingAroundActivity extends BaseActivity implements
         swipeRefresh.setRefreshing(true);
         getDataFromServer();
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        SharePreference preference = new SharePreference(this);
+        MenuItem item = menu.findItem(R.id.action_status);
+        // set your desired icon here based on a flag if you like
+        if (preference.getStatus() == 0){
+            item.setIcon(ContextCompat.getDrawable(mContext,R.drawable.item_online));
+            item.setTitle(getString(R.string.online));
+        }else {
+            item.setIcon(ContextCompat.getDrawable(mContext,R.drawable.item_offline));
+            item.setTitle(getString(R.string.offline));
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_status) {
+            SharePreference preference = new SharePreference(this);
+            if (preference.getStatus() == 0){
+                preference.saveStatus(1);
+                item.setIcon(ContextCompat.getDrawable(mContext,R.drawable.item_offline));
+                item.setTitle(getString(R.string.offline));
+            }else {
+                preference.saveStatus(0);
+                item.setIcon(ContextCompat.getDrawable(mContext,R.drawable.item_online));
+                item.setTitle(getString(R.string.online));
+            }
+            getDataFromServer();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 }

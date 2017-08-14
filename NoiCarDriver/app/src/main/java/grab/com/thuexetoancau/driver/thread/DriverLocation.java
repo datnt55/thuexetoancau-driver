@@ -56,7 +56,7 @@ public class DriverLocation implements Runnable {
         params.put("car_number", preference.getCarNumber());
         params.put("lat", latitude);
         params.put("lon", longtitude);
-        params.put("status", 1);
+        params.put("status", preference.getStatus());
         params.put("phone", preference.getPhone());
         params.put("car_type", 1);
         params.put("os", 1);

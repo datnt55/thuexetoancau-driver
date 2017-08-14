@@ -9,6 +9,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -51,6 +54,8 @@ public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdap
         holder.txtCarSize.setText(arrayTrip.get(position).getCarSize()+" chỗ");
         holder.txtTripType.setText(CommonUtilities.getTripType(arrayTrip.get(position).getTripType()));
         holder.txtCustomer.setText(arrayTrip.get(position).getCustomerName());
+        holder.txtCustomer.setText(arrayTrip.get(position).getCustomerName());
+        holder.txtCustomer.setText(arrayTrip.get(position).getCustomerName());
         holder.imgAccept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,6 +63,12 @@ public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdap
                     listener.onClicked(arrayTrip.get(position));
             }
         });
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+        DateTime dateTime = dtf.parseDateTime(arrayTrip.get(position).getBookingTime());
+        holder.txtStartDate.setText(dateTime.getDayOfMonth()+"/"+dateTime.getMonthOfYear()+"/"+dateTime.getYear());
+        holder.txtStartTime.setText(dateTime.getHourOfDay()+":"+dateTime.getMinuteOfHour());
+        holder.txtDistance.setText(CommonUtilities.convertToKilometer(arrayTrip.get(position).getDistance()));
+        holder.txtPrice.setText(CommonUtilities.convertCurrency(arrayTrip.get(position).getPrice())+" vnđ");
     }
 
     @Override
@@ -80,7 +91,9 @@ public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdap
         ImageView imgAccept;
         TextView txtCustomer;
         TextView txtStartTime;
-        TextView txtBackTime;
+        TextView txtStartDate;
+        TextView txtDistance;
+        TextView txtPrice;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -88,6 +101,10 @@ public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdap
             txtDestination = (TextView) itemView.findViewById(R.id.txt_to);
             txtCarSize = (TextView) itemView.findViewById(R.id.txt_car_type);
             txtTripType = (TextView) itemView.findViewById(R.id.txt_trip_type);
+            txtStartTime = (TextView) itemView.findViewById(R.id.txt_time);
+            txtStartDate = (TextView) itemView.findViewById(R.id.txt_date);
+            txtDistance = (TextView) itemView.findViewById(R.id.txt_distance);
+            txtPrice = (TextView) itemView.findViewById(R.id.txt_price);
             txtCustomer = (TextView) itemView.findViewById(R.id.txt_customer_name);
             imgAccept = (ImageView) itemView.findViewById(R.id.btn_accept);
         }
