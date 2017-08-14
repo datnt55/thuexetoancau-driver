@@ -64,7 +64,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
 
     private void initComponents(View view) {
         txtSource = (TextView) view.findViewById(R.id.text_source);
-        txtSourceSecond = (TextView) view.findViewById(R.id.text_source);
+        txtSourceSecond = (TextView) view.findViewById(R.id.text_source_seconde);
         txtDestination = (TextView) view.findViewById(R.id.txt_destination);
         txtDestinationSecond = (TextView) view.findViewById(R.id.txt_destination_second);
         txtDistance = (TextView) view.findViewById(R.id.txt_distance);

@@ -24,7 +24,7 @@ import grab.com.thuexetoancau.driver.utilities.Defines;
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService{
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-
+        responseForPassenger("Có một cuốc mới dành cho bạn");
         String function = remoteMessage.getData().get("function");
         if (function.equals(Defines.FUNCTION_BOOK_GRAB)){
             String functionCase = remoteMessage.getData().get("case");
