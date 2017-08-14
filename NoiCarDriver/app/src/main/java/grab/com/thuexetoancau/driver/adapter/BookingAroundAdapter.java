@@ -63,7 +63,12 @@ public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdap
                     listener.onClicked(arrayTrip.get(position));
             }
         });
-        DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+        DateTimeFormatter dtf;
+        if (arrayTrip.get(position).getBookingTime().contains(".")) {
+            dtf = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        }else{
+            dtf = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+        }
         DateTime dateTime = dtf.parseDateTime(arrayTrip.get(position).getBookingTime());
         holder.txtStartDate.setText(dateTime.getDayOfMonth()+"/"+dateTime.getMonthOfYear()+"/"+dateTime.getYear());
         holder.txtStartTime.setText(dateTime.getHourOfDay()+":"+dateTime.getMinuteOfHour());

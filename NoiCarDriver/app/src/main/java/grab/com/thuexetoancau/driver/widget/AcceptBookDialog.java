@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -48,7 +49,6 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
     private TextView txtSource, txtSourceSecond;
     private TextView txtDestination, txtDestinationSecond;
     private TextView txtDistance, txtPrice;
-
     public AcceptBookDialog() {
 
     }
@@ -99,7 +99,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
 
     private void cancelTrip() {
         SharePreference preference = new SharePreference(getActivity());
-        mApi.driverCancelTrip(trip.getId(), preference.getDriverId(), preference.getPhone(), "", new ApiUtilities.CancelTripListener() {
+        mApi.driverNoReceiverTrip(trip.getId(), preference.getDriverId(), new ApiUtilities.CancelTripListener() {
             @Override
             public void onSuccess() {
                 dismiss();
@@ -115,17 +115,12 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
 
     private void acceptTrip() {
         SharePreference preference = new SharePreference(getActivity());
-        /*mApi.receivedTrip(trip.getId(), preference.getDriverId(), preference.getPhone(), "", new ApiUtilities.CancelTripListener() {
+        mApi.receivedTrip(trip.getId(), preference.getDriverId(), new ApiUtilities.AroundBookingListener() {
             @Override
-            public void onSuccess() {
+            public void onSuccess(ArrayList<Trip> arrayTrip) {
                 dismiss();
             }
-
-            @Override
-            public void onFailure() {
-
-            }
-        });*/
+        });
     }
 
     @Override

@@ -56,8 +56,8 @@ public class ListBookingAroundActivity extends BaseActivity implements
         setContentView(R.layout.activity_list_booking_around);
         mApi = new ApiUtilities(this);
         mContext = this;
-        if (getIntent().hasExtra(Defines.BUNDLE_TRIP)){
-            Trip trip = (Trip) getIntent().getSerializableExtra(Defines.BUNDLE_TRIP);
+        if (getIntent().hasExtra(Defines.BUNDLE_TRIP_BACKGROUND)){
+            Trip trip = (Trip) getIntent().getSerializableExtra(Defines.BUNDLE_TRIP_BACKGROUND);
             FragmentManager fragmentManager = getSupportFragmentManager();
             AcceptBookDialog dialog = new AcceptBookDialog();
             Bundle bundle = new Bundle();

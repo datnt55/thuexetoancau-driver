@@ -10,6 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.os.Build;
+import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -24,7 +27,9 @@ import grab.com.thuexetoancau.driver.activities.ListBookingAroundActivity;
 import grab.com.thuexetoancau.driver.activities.SplashActivity;
 import grab.com.thuexetoancau.driver.model.Position;
 import grab.com.thuexetoancau.driver.model.Trip;
+import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
+import grab.com.thuexetoancau.driver.utilities.SharePreference;
 
 import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
 import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE;
@@ -45,7 +50,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                     intent.putExtra(Defines.BUNDLE_TRIP,trip);
                     broadcastManager.sendBroadcast(intent);
                 }else
-                    responseForPassenger("Có một cuốc mới dành cho bạn. Bấm vào đây để chấp nhận", trip);
+                    responseForPassenger(trip);
             }else if (functionCase.equals(Defines.CASE_FOUND_DRIVER)){
 
             }
@@ -82,21 +87,45 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         return trip;
     }
 
-    private void responseForPassenger(String message, Trip trip) {
-        Intent intent = new Intent(this,ListBookingAroundActivity.class);
-        intent.putExtra(Defines.BUNDLE_TRIP,trip);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+    private void responseForPassenger(final Trip trip) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                new CountDownTimer(30000, 1000) {
+
+                    public void onTick(long millisUntilFinished) {
+                    }
+                    public void onFinish() {
+                        SharePreference preference = new SharePreference(FirebaseMessagingService.this);
+                        ApiUtilities mApi = new ApiUtilities(FirebaseMessagingService.this);
+                        mApi.driverNoReceiverTrip(trip.getId(),preference.getDriverId(),null);
+                        final NotificationCompat.Builder notification = new NotificationCompat.Builder(FirebaseMessagingService.this)
+                                .setAutoCancel(true)
+                                .setContentTitle("Thuê xe toàn cầu driver")
+                                .setContentText("Bạn đã lỡ 1 chuyến đi")
+                                .setSmallIcon(R.mipmap.ic_launcher)
+                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                .setVibrate(new long[] {1, 1, 1});
+                        NotificationManager managerCancel = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                        managerCancel.notify(0,notification.build());
+                        return;
+                    }
+
+                }.start();
+            }
+        });
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseMessagingService.this)
                 .setAutoCancel(true)
-                .setContentTitle("Thuê xe toàn cầu")
-                .setContentText(message)
+                .setContentTitle("Thuê xe toàn cầu driver")
+                .setContentText("Có một cuốc mới dành cho bạn. Bấm vào đây để chấp nhận")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setContentIntent(pendingIntent)
                 .setVibrate(new long[] {1, 1, 1});
-
-
+        Intent intent = new Intent(FirebaseMessagingService.this,ListBookingAroundActivity.class);
+        intent.putExtra(Defines.BUNDLE_TRIP_BACKGROUND,trip);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessagingService.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.notify(0,builder.build());
     }

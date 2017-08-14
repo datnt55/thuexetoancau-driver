@@ -266,7 +266,7 @@ public class ApiUtilities {
         return trip;
     }
 
-    public void receivedTrip(double bookingId, double driverId, final AroundBookingListener listener) {
+    public void receivedTrip(int bookingId, int driverId, final AroundBookingListener listener) {
         final ProgressDialog dialog = new ProgressDialog(mContext);
         dialog.setMessage("Đang tải dữ liệu");
         dialog.setCanceledOnTouchOutside(false);
@@ -294,20 +294,17 @@ public class ApiUtilities {
                         ArrayList<Trip> arrayTrip = new ArrayList<Trip>();
                         JSONArray array = json.getJSONArray("data");
                         JSONObject data = array.getJSONObject(0);
-                        JSONArray bookingList = data.getJSONArray("bookinglist");
-                        for (int i = 0 ; i < bookingList.length(); i++) {
-                            JSONObject booking = bookingList.getJSONObject(i);
-                            Trip trip = parseBookingData(booking);
-                            arrayTrip.add(trip);
-                        }
+                        int userId = data.getInt("user_id");
                         if (listener != null)
                             listener.onSuccess(arrayTrip);
                     }
+                    Toast.makeText(mContext,json.getString("message"),Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
                     if (listener != null)
                         listener.onSuccess(null);
                 }
+
                 dialog.dismiss();
             }
 
@@ -323,7 +320,7 @@ public class ApiUtilities {
         });
     }
 
-    public void driverCancelTrip(double bookingId, int driverId, String driverPhone,String cancelReason, final CancelTripListener listener) {
+    public void driverCancelTrip(int bookingId, int driverId, String driverPhone,String cancelReason, final CancelTripListener listener) {
         final ProgressDialog dialog = new ProgressDialog(mContext);
         dialog.setMessage("Đang tải dữ liệu");
         dialog.setCanceledOnTouchOutside(false);
@@ -336,7 +333,7 @@ public class ApiUtilities {
         params.put("driver_phone",driverPhone);
         params.put("cancel_reason",cancelReason);
         Log.e("params deleteDelivery", params.toString());
-        BaseService.getHttpClient().post(Defines.URL_RECEIVE_TRIP,params, new AsyncHttpResponseHandler() {
+        BaseService.getHttpClient().post(Defines.URL_CANCEL_TRIP,params, new AsyncHttpResponseHandler() {
 
             @Override
             public void onStart() {
@@ -376,7 +373,49 @@ public class ApiUtilities {
             }
         });
     }
+    public void driverNoReceiverTrip(int bookingId, int driverId, final CancelTripListener listener) {
+        RequestParams params;
+        params = new RequestParams();
+        params.put("id_booking",bookingId);
+        params.put("driver_id",driverId);
+        Log.e("params deleteDelivery", params.toString());
+        BaseService.getHttpClient().post(Defines.URL_NO_ACCEPT_TRIP,params, new AsyncHttpResponseHandler() {
 
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+                // called when response HTTP status is "200 OK"
+                Log.i("JSON", new String(responseBody));
+                JSONObject json = null;
+                try {
+                    json = new JSONObject(new String(responseBody));
+                    if (json.getString("status").equals("success")){
+                        if (listener != null)
+                            listener.onSuccess();
+                    }else{
+                        if (listener != null)
+                            listener.onFailure();
+                    }
+                    Toast.makeText(mContext,json.getString("message"),Toast.LENGTH_SHORT).show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+
+            }
+        });
+    }
     public interface LoginResponseListener {
         void onSuccess();
     }

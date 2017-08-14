@@ -16,7 +16,7 @@ public class Defines {
     public static  final String URL_RECEIVE_TRIP                 = HOSTNAME + "api2/receivedTrip";
     public static  final String URL_CANCEL_TRIP                 = HOSTNAME + "api2/driverCancelTrip";
     public static  final String URL_CONFIRM_TRIP                = HOSTNAME + "api2/confirmTrip";
-    public static  final String URL_NO_ACCEPT_TRIP              = HOSTNAME + "api2/noReceivedTrip ";
+    public static  final String URL_NO_ACCEPT_TRIP              = HOSTNAME + "api2/noReceivedTrip";
     public static  final String URL_GET_CAR_TYPE            = HOSTNAME + "api/getListCarType";
     public static  final String URL_GET_CAR_MADE            = HOSTNAME + "api/getCarMadeList";
     public static  final String URL_GET_CAR_MODEL           = HOSTNAME + "api/getCarModelListFromMade";
@@ -54,7 +54,9 @@ public class Defines {
     public static final String TYPE_POINT = "type direction point";
     public static final String POSITION_POINT = "position direction point";
     public static final String BUNDLE_USER = "bundle user";
+    public static final String BUNDLE_TRIP_BACKGROUND = "bundle trip background";
     public static final String BUNDLE_TRIP = "bundle trip";
+    public static final String BUNDLE_REMAIN = "bundle remain";
     // Main Screen Dimension, will be set when app startup
 
     // Notification

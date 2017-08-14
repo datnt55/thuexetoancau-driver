@@ -22,18 +22,22 @@ public class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         LocalBroadcastManager.getInstance(this).registerReceiver(tokenReceiver, new IntentFilter("newBooking"));
     }
+
     BroadcastReceiver tokenReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Trip trip = (Trip) intent.getSerializableExtra(Defines.BUNDLE_TRIP);
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            AcceptBookDialog dialog = new AcceptBookDialog();
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(Defines.BUNDLE_TRIP,trip);
-            dialog.setArguments(bundle);
-            dialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
-            dialog.setCancelable(false);
-            dialog.show(fragmentManager, "Input Dialog");
+            try {
+                Trip trip = (Trip) intent.getSerializableExtra(Defines.BUNDLE_TRIP);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                AcceptBookDialog dialog = new AcceptBookDialog();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(Defines.BUNDLE_TRIP, trip);
+                dialog.setArguments(bundle);
+                dialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
+                dialog.setCancelable(false);
+                dialog.show(fragmentManager, "Input Dialog");
+            } catch (IllegalStateException e) {
+            }
         }
     };
 
