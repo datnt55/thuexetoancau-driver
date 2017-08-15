@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -421,7 +422,7 @@ public class ApiUtilities {
         });
     }
 
-    public void confirmTrip(int bookingId, int driverId, final AcceptTripListener listener) {
+    public void confirmTrip(int bookingId, int driverId,long realDistance, final ConfirmTripListener listener) {
         final ProgressDialog dialog = new ProgressDialog(mContext);
         dialog.setMessage("Đang tải dữ liệu");
         dialog.setCanceledOnTouchOutside(false);
@@ -431,8 +432,12 @@ public class ApiUtilities {
         params = new RequestParams();
         params.put("id_booking",bookingId);
         params.put("driver_id",driverId);
+        params.put("real_distance",realDistance);
+        DateTime current = new DateTime();
+        long key = (current.getMillis() + Global.serverTimeDiff)*13 + 27;
+        params.put("key", key);
         Log.e("params deleteDelivery", params.toString());
-        BaseService.getHttpClient().post(Defines.URL_RECEIVE_TRIP,params, new AsyncHttpResponseHandler() {
+        BaseService.getHttpClient().post(Defines.URL_CONFIRM_TRIP,params, new AsyncHttpResponseHandler() {
 
             @Override
             public void onStart() {
@@ -448,12 +453,11 @@ public class ApiUtilities {
                     if (json.getString("status").equals("success")){
                         JSONArray array = json.getJSONArray("data");
                         JSONObject data = array.getJSONObject(0);
-                        int userId = data.getInt("user_id");
-                        String customName = data.getString("custom_name");
-                        String customPhone = data.getString("custom_phone");
-                        User user = new User(userId,customName,customPhone,"","");
+                        long price = data.getLong("price");
+                        long distance = data.getLong("distance");
+                        String dateTime = data.getString("date_time");
                         if (listener != null)
-                            listener.onSuccess(user);
+                            listener.onSuccess(price,distance,dateTime);
                     }
                     Toast.makeText(mContext,json.getString("message"),Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
@@ -551,5 +555,8 @@ public class ApiUtilities {
         void onSuccess(Trip trip);
     }
 
+    public interface ConfirmTripListener {
+        void onSuccess(long price, long distance, String dateTime);
+    }
 
 }

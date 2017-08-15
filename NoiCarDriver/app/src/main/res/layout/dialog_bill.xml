@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:gravity="center_horizontal"
+    android:paddingTop="20dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingBottom="10dp"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/txt_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="16/08/2017 12:02:23" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textColor="@color/black_light"
+            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:text="Khách hàng" />
+
+        <TextView
+            android:id="@+id/txt_customer_name"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/black_light"
+            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textColor="@color/black_light"
+            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:text="Thành tiền" />
+
+        <TextView
+            android:id="@+id/txt_price"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/black_light"
+            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+    </LinearLayout>
+    <Button
+        android:id="@+id/btn_end_trip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/button_white_title_normal"
+        android:text="Kết thúc chuyến đi" />
+</LinearLayout>

@@ -8,12 +8,15 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,24 +40,32 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.microedition.khronos.opengles.GL;
+
 import grab.com.thuexetoancau.driver.DirectionFinder.DirectionFinder;
 import grab.com.thuexetoancau.driver.DirectionFinder.DirectionFinderListener;
 import grab.com.thuexetoancau.driver.DirectionFinder.Route;
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.model.Position;
 import grab.com.thuexetoancau.driver.model.Trip;
+import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.CommonUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.DialogUtils;
 import grab.com.thuexetoancau.driver.utilities.GPSTracker;
+import grab.com.thuexetoancau.driver.utilities.Global;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
+import grab.com.thuexetoancau.driver.widget.AcceptBookDialog;
 import grab.com.thuexetoancau.driver.widget.CustomerInfoLayout;
+import grab.com.thuexetoancau.driver.widget.PaymentDialog;
 
 public class AcceptBookingActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         BottomNavigationView.OnNavigationItemSelectedListener,
+        View.OnClickListener,
+        PaymentDialog.BillSuccessListenr,
         DirectionFinderListener,
         OnMapReadyCallback{
 
@@ -70,6 +81,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
     private TextView txtCustomerName, txtSource, txtDestination, txtNote;
     private BottomNavigationView navigation;
     private ApiUtilities mApi;
+    private Button btnFinishTrip;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +115,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         txtDestination = (TextView) layoutCustomer.findViewById(R.id.customer_to);
         txtNote = (TextView) layoutCustomer.findViewById(R.id.customer_note);
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
-
+        btnFinishTrip = (Button) findViewById(R.id.btn_finish_trip);
         navigation.setOnNavigationItemSelectedListener(this);
         txtCustomerName.setText(customerTrip.getCustomerName());
         txtSource.setText(customerTrip.getListStopPoints().get(0).getFullPlace());
@@ -274,6 +286,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
                 mApi.driverCancelTrip(customerTrip.getId(), preference.getDriverId(), preference.getPhone(), reason, new ApiUtilities.CancelTripListener() {
                     @Override
                     public void onSuccess() {
+                        Global.inTrip = false;
                         Intent intent = new Intent(AcceptBookingActivity.this, ListBookingAroundActivity.class);
                         startActivity(intent);
                         finish();
@@ -289,7 +302,11 @@ public class AcceptBookingActivity extends AppCompatActivity implements
     }
 
     private void goToReceiveCustomer() {
-        ApiUtilities mApi = new ApiUtilities(this);
+        Global.inTrip = true;
+        Global.totalDistance = 0;
+        btnFinishTrip.setVisibility(View.VISIBLE);
+        navigation.setVisibility(View.GONE);
+        btnFinishTrip.setOnClickListener(this);
     }
 
     public void showCurrentLocation(View v){
@@ -300,5 +317,50 @@ public class AcceptBookingActivity extends AppCompatActivity implements
                 .tilt(45)                   // Sets the tilt of the camera to 0 degrees
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btn_finish_trip:
+                int distance = calculateRealDistance();
+                SharePreference preference = new SharePreference(mContext);
+                mApi.confirmTrip(customerTrip.getId(), preference.getDriverId(), distance, new ApiUtilities.ConfirmTripListener() {
+                    @Override
+                    public void onSuccess(long price, long distance, String dateTime) {
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        PaymentDialog dialog = new PaymentDialog();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(Defines.BUNDLE_CUSTOMER_NAME,customerTrip.getCustomerName());
+                        bundle.putInt(Defines.BUNDLE_PRICE, (int) price);
+                        bundle.putString(Defines.BUNDLE_TRIP_DATE,dateTime);
+                        dialog.setArguments(bundle);
+                        dialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.TitleDialog);
+                        dialog.setCancelable(false);
+                        dialog.setOnFinishTripListener(AcceptBookingActivity.this);
+                        dialog.show(fragmentManager, "Input Dialog");
+                    }
+                });
+        }
+    }
+
+    private int calculateRealDistance() {
+        if (customerTrip.getDistance() > Global.totalDistance)
+            return Global.totalDistance;
+        else {
+            if (customerTrip.getDistance() - Global.totalDistance <=  (Global.totalDistance*5/100)){
+                return Global.totalDistance;
+            }else {
+                return customerTrip.getDistance()+ (Global.totalDistance*5/100);
+            }
+        }
+    }
+
+    @Override
+    public void onFinishTrip() {
+        Global.inTrip = false;
+        Intent intent = new Intent(AcceptBookingActivity.this, ListBookingAroundActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

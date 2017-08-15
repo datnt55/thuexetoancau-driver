@@ -20,5 +20,7 @@ public class Global {
     public static int MAX_DISTANCE                              = 50000;
     public static int MIN_CURRENT_DISTANCE                      = 20;
     public static int LOOP_TIME                                 = 10000;
+    public static int totalDistance                             = 0;
+    public static boolean inTrip                                = false;
     public static CountDownTimer countDownTimer;
 }

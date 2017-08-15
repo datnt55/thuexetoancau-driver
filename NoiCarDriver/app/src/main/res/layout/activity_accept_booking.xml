@@ -45,6 +45,7 @@
         android:background="?android:attr/windowBackground"
         app:menu="@menu/navigation" />
     <Button
+        android:id="@+id/btn_finish_trip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/button_white_title_normal"

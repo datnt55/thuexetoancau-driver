@@ -58,6 +58,9 @@ public class Defines {
     public static final String BUNDLE_TRIP_BACKGROUND = "bundle trip background";
     public static final String BUNDLE_TRIP = "bundle trip";
     public static final String BUNDLE_NOTIFY_TRIP = "bundle notify trip";
+    public static final String BUNDLE_CUSTOMER_NAME = "bundle customer name";
+    public static final String BUNDLE_PRICE= "bundle price";
+    public static final String BUNDLE_TRIP_DATE= "bundle trip date";
     // Main Screen Dimension, will be set when app startup
 
     // Notification
