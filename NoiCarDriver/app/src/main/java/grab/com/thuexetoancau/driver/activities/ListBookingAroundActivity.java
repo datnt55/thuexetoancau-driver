@@ -31,6 +31,7 @@ import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.DialogUtils;
 import grab.com.thuexetoancau.driver.utilities.GPSTracker;
+import grab.com.thuexetoancau.driver.utilities.Global;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
 import grab.com.thuexetoancau.driver.widget.AcceptBookDialog;
 
@@ -66,6 +67,7 @@ public class ListBookingAroundActivity extends BaseActivity implements
             dialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
             dialog.setCancelable(false);
             dialog.show(fragmentManager, "Input Dialog");
+            Global.countDownTimer.cancel();
         }
         initComponents();
     }
@@ -150,6 +152,7 @@ public class ListBookingAroundActivity extends BaseActivity implements
         Intent intent = new Intent(mContext, AcceptBookingActivity.class);
         intent.putExtra(Defines.BUNDLE_TRIP, trip);
         startActivity(intent);
+        finish();
     }
 
     @Override

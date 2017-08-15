@@ -1,23 +1,17 @@
 package grab.com.thuexetoancau.driver.activities;
 
-import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -32,23 +26,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Dash;
-import com.google.android.gms.maps.model.Dot;
-import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import grab.com.thuexetoancau.driver.DirectionFinder.DirectionFinder;
 import grab.com.thuexetoancau.driver.DirectionFinder.DirectionFinderListener;
@@ -56,10 +43,12 @@ import grab.com.thuexetoancau.driver.DirectionFinder.Route;
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.model.Position;
 import grab.com.thuexetoancau.driver.model.Trip;
+import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.CommonUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.DialogUtils;
 import grab.com.thuexetoancau.driver.utilities.GPSTracker;
+import grab.com.thuexetoancau.driver.utilities.SharePreference;
 import grab.com.thuexetoancau.driver.widget.CustomerInfoLayout;
 
 public class AcceptBookingActivity extends AppCompatActivity implements
@@ -80,18 +69,31 @@ public class AcceptBookingActivity extends AppCompatActivity implements
     private Toolbar toolbar;
     private TextView txtCustomerName, txtSource, txtDestination, txtNote;
     private BottomNavigationView navigation;
-
+    private ApiUtilities mApi;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accept_booking);
         mContext = this;
+        mApi = new ApiUtilities(this);
         if (getIntent().hasExtra(Defines.BUNDLE_TRIP)) {
             customerTrip = (Trip) getIntent().getSerializableExtra(Defines.BUNDLE_TRIP);
         }
-        SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        map.getMapAsync(this);
-        initComponents();
+        if (getIntent().hasExtra(Defines.BUNDLE_NOTIFY_TRIP)) {
+            mApi.getTripInfo(customerTrip.getId(), new ApiUtilities.TripInformationListener() {
+                @Override
+                public void onSuccess(Trip trip) {
+                    customerTrip = trip;
+                    SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+                    map.getMapAsync(AcceptBookingActivity.this);
+                    initComponents();
+                }
+            });
+        }else {
+            SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            map.getMapAsync(this);
+            initComponents();
+        }
     }
 
     private void initComponents(){
@@ -206,7 +208,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         }
         LatLngBounds bounds = builder.build();
         int padding = (int) CommonUtilities.convertDpToPixel(40,mContext); // offset from edges of the map in pixels
-        mMap.setPadding(padding,measureView(toolbar)+(int)CommonUtilities.convertDpToPixel(50,mContext),padding, measureView(layoutCustomer)+(int)CommonUtilities.convertDpToPixel(20,mContext));
+        mMap.setPadding(padding,measureView(toolbar)+measureView(layoutCustomer)+(int)CommonUtilities.convertDpToPixel(50,mContext),padding, measureView(navigation)+(int)CommonUtilities.convertDpToPixel(20,mContext));
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 0);
         mMap.animateCamera(cu);
     }
@@ -253,11 +255,50 @@ public class AcceptBookingActivity extends AppCompatActivity implements
                 startActivity(callIntent);
                 break;
             case R.id.navigation_cancel:
+                cancelTrip();
                 break;
             case R.id.navigation_welcome:
+                goToReceiveCustomer();
                 break;
         }
 
         return true;
+    }
+
+    private void cancelTrip() {
+        DialogUtils.showCancelTripConfirm((Activity) mContext, new DialogUtils.ConfirmListenter() {
+            @Override
+            public void onConfirm(String reason) {
+                ApiUtilities mApi = new ApiUtilities(mContext);
+                SharePreference preference = new SharePreference(mContext);
+                mApi.driverCancelTrip(customerTrip.getId(), preference.getDriverId(), preference.getPhone(), reason, new ApiUtilities.CancelTripListener() {
+                    @Override
+                    public void onSuccess() {
+                        Intent intent = new Intent(AcceptBookingActivity.this, ListBookingAroundActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
+                    @Override
+                    public void onFailure() {
+
+                    }
+                });
+            }
+        });
+    }
+
+    private void goToReceiveCustomer() {
+        ApiUtilities mApi = new ApiUtilities(this);
+    }
+
+    public void showCurrentLocation(View v){
+        showCurrentLocationToMap(gpsTracker.getLatitude(), gpsTracker.getLongitude());
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(currentLocation.getPosition())             // Sets the center of the map to current location
+                .zoom(16)                   // Sets the zoom
+                .tilt(45)                   // Sets the tilt of the camera to 0 degrees
+                .build();                   // Creates a CameraPosition from the builder
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 }

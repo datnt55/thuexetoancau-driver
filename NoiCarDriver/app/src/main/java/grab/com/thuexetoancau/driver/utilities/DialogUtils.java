@@ -56,6 +56,40 @@ public class DialogUtils {
                 .show();
     }
 
+    public static void showCancelTripConfirm(Activity mActivity, final ConfirmListenter listener) {
+        // custom dialog
+        final Dialog dialog = new Dialog(mActivity);
+        dialog.setContentView(R.layout.dialog_reason_cancel);
+        // set the custom dialog components - text, image and button
+        final EditText edtCancel = (EditText) dialog.findViewById(R.id.edt_cancel_trip);
+        Button btnConfirm = (Button) dialog.findViewById(R.id.btn_confirm);
+        Button btnCancel = (Button) dialog.findViewById(R.id.btn_cancel);
+
+        btnConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null)
+                    listener.onConfirm(edtCancel.getText().toString());
+                dialog.dismiss();
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        Window window = dialog.getWindow();
+        lp.copyFrom(window.getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        window.setAttributes(lp);
+    }
+
 
     public static void showLoginDialog(Activity mActivity, final YesNoListenter listener) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mActivity);

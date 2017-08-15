@@ -1,6 +1,7 @@
 package grab.com.thuexetoancau.driver.widget;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,7 +32,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import grab.com.thuexetoancau.driver.R;
+import grab.com.thuexetoancau.driver.activities.AcceptBookingActivity;
 import grab.com.thuexetoancau.driver.model.Trip;
+import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.CommonUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
@@ -49,6 +52,8 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
     private TextView txtSource, txtSourceSecond;
     private TextView txtDestination, txtDestinationSecond;
     private TextView txtDistance, txtPrice;
+    private CountDownTimer count;
+
     public AcceptBookDialog() {
 
     }
@@ -80,7 +85,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
         progress = (ArcProgress) view.findViewById(R.id.arc_progress);
         btnAccept = (Button) view.findViewById(R.id.btn_accept);
         btnAccept.setOnClickListener(this);
-        new CountDownTimer(30000, 1000) {
+        count = new CountDownTimer(30000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 progress.setProgress(30 - (int) millisUntilFinished/1000);
@@ -89,7 +94,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
             public void onFinish() {
                 progress.setProgress(0);
                 cancelTrip();
-                dismiss();
+                AcceptBookDialog.this.dismiss();
             }
 
        }.start();
@@ -102,7 +107,6 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
         mApi.driverNoReceiverTrip(trip.getId(), preference.getDriverId(), new ApiUtilities.CancelTripListener() {
             @Override
             public void onSuccess() {
-                dismiss();
             }
 
             @Override
@@ -115,10 +119,23 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
 
     private void acceptTrip() {
         SharePreference preference = new SharePreference(getActivity());
-        mApi.receivedTrip(trip.getId(), preference.getDriverId(), new ApiUtilities.AroundBookingListener() {
+        mApi.receivedTrip(trip.getId(), preference.getDriverId(), new ApiUtilities.AcceptTripListener() {
             @Override
-            public void onSuccess(ArrayList<Trip> arrayTrip) {
+            public void onSuccess(User user) {
+                count.cancel();
                 dismiss();
+                Intent intent = new Intent(getActivity(), AcceptBookingActivity.class);
+                trip.setCustomerName(user.getName());
+                trip.setCustomerPhone(user.getPhone());
+                intent.putExtra(Defines.BUNDLE_TRIP,trip);
+                intent.putExtra(Defines.BUNDLE_NOTIFY_TRIP,"");
+                startActivity(intent);
+                getActivity().finish();
+            }
+
+            @Override
+            public void onFailure() {
+
             }
         });
     }

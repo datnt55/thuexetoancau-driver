@@ -15,8 +15,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import grab.com.thuexetoancau.driver.R;
+import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
+import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
+import grab.com.thuexetoancau.driver.widget.AcceptBookDialog;
 
 public class LoginActivity extends AppCompatActivity {
     private SharePreference preference;
@@ -85,8 +88,14 @@ public class LoginActivity extends AppCompatActivity {
         }
         mApi.login(phone, pass, new ApiUtilities.LoginResponseListener() {
             @Override
-            public void onSuccess() {
-                Intent intent = new Intent(mContext,ListBookingAroundActivity.class);
+            public void onSuccess(Trip trip) {
+                Intent intent = null;
+                if (trip != null) {
+                    intent = new Intent(mContext, AcceptBookingActivity.class);
+                    intent.putExtra(Defines.BUNDLE_TRIP, trip);
+                }else {
+                    intent = new Intent(mContext, ListBookingAroundActivity.class);
+                }
                 startActivity(intent);
                 finish();
             }

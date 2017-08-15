@@ -96,5 +96,6 @@
 
     <string name="offline">Ngoại tuyến</string>
     <string name="online">Trực tuyến</string>
+    <string name="end_trip">Hoàn thành chuyến đi</string>
 </resources>
 

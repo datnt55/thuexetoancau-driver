@@ -16,15 +16,20 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import grab.com.thuexetoancau.driver.R;
+import grab.com.thuexetoancau.driver.model.Trip;
+import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
+import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
 
 public class SplashActivity extends AppCompatActivity {
     private SharePreference preference;
     private ImageView imgLoading;
+    private Context mContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        mContext = this;
         preference = new SharePreference(this);
         imgLoading = (ImageView) findViewById(R.id.img_loading);
         AnimationDrawable frameAnimation = (AnimationDrawable) imgLoading.getBackground();
@@ -50,9 +55,21 @@ public class SplashActivity extends AppCompatActivity {
 
     private void goToApplication() {
         if (preference.getDriverId() != 0){
-            Intent i = new Intent(SplashActivity.this, ListBookingAroundActivity.class);
-            startActivity(i);
-            finish();
+            ApiUtilities mApi = new ApiUtilities(this);
+            mApi.login(preference.getPhone(), "1234", new ApiUtilities.LoginResponseListener() {
+                @Override
+                public void onSuccess(Trip trip) {
+                    Intent intent = null;
+                    if (trip != null) {
+                        intent = new Intent(mContext, AcceptBookingActivity.class);
+                        intent.putExtra(Defines.BUNDLE_TRIP, trip);
+                    }else {
+                        intent = new Intent(mContext, ListBookingAroundActivity.class);
+                    }
+                    startActivity(intent);
+                    finish();
+                }
+            });
         }else {
             Intent i = new Intent(SplashActivity.this, LoginActivity.class);
             startActivity(i);

@@ -1,5 +1,7 @@
 package grab.com.thuexetoancau.driver.utilities;
 
+import android.os.CountDownTimer;
+
 import java.util.ArrayList;
 
 import grab.com.thuexetoancau.driver.model.Phone;
@@ -18,5 +20,5 @@ public class Global {
     public static int MAX_DISTANCE                              = 50000;
     public static int MIN_CURRENT_DISTANCE                      = 20;
     public static int LOOP_TIME                                 = 10000;
-
+    public static CountDownTimer countDownTimer;
 }

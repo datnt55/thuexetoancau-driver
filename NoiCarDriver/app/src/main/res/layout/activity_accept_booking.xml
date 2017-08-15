@@ -21,6 +21,7 @@
         android:layout_alignParentRight="true"
         android:elevation="5dp"
         android:clickable="true"
+        android:onClick="showCurrentLocation"
         android:background="@drawable/fix_gps">
 
         <ImageView
@@ -43,4 +44,11 @@
         android:layout_alignParentBottom="true"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/navigation" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/button_white_title_normal"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:text="@string/end_trip"/>
 </RelativeLayout>

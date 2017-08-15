@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import grab.com.thuexetoancau.driver.model.Position;
 import grab.com.thuexetoancau.driver.model.Trip;
+import grab.com.thuexetoancau.driver.model.User;
 
 
 /**
@@ -36,11 +37,11 @@ public class ApiUtilities {
         params.put("phone", phone);
         params.put("pass",pass);
         Log.i("params deleteDelivery", params.toString());
-        final ProgressDialog dialog = new ProgressDialog(mContext);
+       /* final ProgressDialog dialog = new ProgressDialog(mContext);
         dialog.setMessage("Đang tải dữ liệu");
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
-        dialog.show();
+        dialog.show();*/
         BaseService.getHttpClient().post(Defines.URL_LOGIN, params, new AsyncHttpResponseHandler() {
 
             @Override
@@ -52,37 +53,40 @@ public class ApiUtilities {
             public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
                 // called when response HTTP status is "200 OK"
                 Log.i("JSON", new String(responseBody));
-                dialog.dismiss();
+               // dialog.dismiss();
                 try {
                     JSONObject json = new JSONObject(new String(responseBody));
                     if (json.getString("status").equals("success")){
                         JSONArray array = json.getJSONArray("data");
                         JSONObject data = array.getJSONObject(0);
                         JSONObject driverData = data.getJSONObject("driver_data");
+                        String sBooking = data.getString("booking_data");
+                        Trip trip = null;
+                        if (!sBooking.equals("null")) {
+                            JSONObject booking = data.getJSONObject("booking_data");
+                            trip = parseBookingData(booking);
+                        }
                         saveVehicleInfor(driverData);
                         if (listener != null)
-                            listener.onSuccess();
+                            listener.onSuccess(trip);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
-
             }
 
             @Override
             public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
                 // called when response HTTP status is "4XX" (eg. 401, 403, 404)
                 //Toast.makeText(getContext(), getResources().getString(R.string.check_network), Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
+               // dialog.dismiss();
             }
 
             @Override
             public void onRetry(int retryNo) {
                 // called when request is retried
                 //Toast.makeText(getContext(), getResources().getString(R.string.check_network), Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
+              //  dialog.dismiss();
             }
         });
     }
@@ -266,7 +270,7 @@ public class ApiUtilities {
         return trip;
     }
 
-    public void receivedTrip(int bookingId, int driverId, final AroundBookingListener listener) {
+    public void receivedTrip(int bookingId, int driverId, final AcceptTripListener listener) {
         final ProgressDialog dialog = new ProgressDialog(mContext);
         dialog.setMessage("Đang tải dữ liệu");
         dialog.setCanceledOnTouchOutside(false);
@@ -291,18 +295,18 @@ public class ApiUtilities {
                 try {
                     JSONObject json = new JSONObject(new String(responseBody));
                     if (json.getString("status").equals("success")){
-                        ArrayList<Trip> arrayTrip = new ArrayList<Trip>();
                         JSONArray array = json.getJSONArray("data");
                         JSONObject data = array.getJSONObject(0);
                         int userId = data.getInt("user_id");
+                        String customName = data.getString("custom_name");
+                        String customPhone = data.getString("custom_phone");
+                        User user = new User(userId,customName,customPhone,"","");
                         if (listener != null)
-                            listener.onSuccess(arrayTrip);
+                            listener.onSuccess(user);
                     }
                     Toast.makeText(mContext,json.getString("message"),Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    if (listener != null)
-                        listener.onSuccess(null);
                 }
 
                 dialog.dismiss();
@@ -416,8 +420,114 @@ public class ApiUtilities {
             }
         });
     }
+
+    public void confirmTrip(int bookingId, int driverId, final AcceptTripListener listener) {
+        final ProgressDialog dialog = new ProgressDialog(mContext);
+        dialog.setMessage("Đang tải dữ liệu");
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.show();
+        RequestParams params;
+        params = new RequestParams();
+        params.put("id_booking",bookingId);
+        params.put("driver_id",driverId);
+        Log.e("params deleteDelivery", params.toString());
+        BaseService.getHttpClient().post(Defines.URL_RECEIVE_TRIP,params, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+                // called when response HTTP status is "200 OK"
+                Log.i("JSON", new String(responseBody));
+                try {
+                    JSONObject json = new JSONObject(new String(responseBody));
+                    if (json.getString("status").equals("success")){
+                        JSONArray array = json.getJSONArray("data");
+                        JSONObject data = array.getJSONObject(0);
+                        int userId = data.getInt("user_id");
+                        String customName = data.getString("custom_name");
+                        String customPhone = data.getString("custom_phone");
+                        User user = new User(userId,customName,customPhone,"","");
+                        if (listener != null)
+                            listener.onSuccess(user);
+                    }
+                    Toast.makeText(mContext,json.getString("message"),Toast.LENGTH_SHORT).show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    public void getTripInfo(int bookingId, final TripInformationListener listener) {
+        final ProgressDialog dialog = new ProgressDialog(mContext);
+        dialog.setMessage("Đang tải dữ liệu");
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.show();
+        RequestParams params;
+        params = new RequestParams();
+        params.put("id_booking",bookingId);
+        Log.e("params deleteDelivery", params.toString());
+        BaseService.getHttpClient().post(Defines.URL_GET_TRIP_INFO,params, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+                // called when response HTTP status is "200 OK"
+                Log.i("JSON", new String(responseBody));
+                try {
+                    JSONObject json = new JSONObject(new String(responseBody));
+                    if (json.getString("status").equals("success")){
+                        JSONArray array = json.getJSONArray("data");
+                        JSONObject data = array.getJSONObject(0);
+                        JSONObject listTrip = data.getJSONObject("list");
+                        Trip trip = parseBookingData(listTrip);
+                        if (listener != null)
+                            listener.onSuccess(trip);
+                    }
+                    Toast.makeText(mContext,json.getString("message"),Toast.LENGTH_SHORT).show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+                dialog.dismiss();
+            }
+        });
+    }
+
     public interface LoginResponseListener {
-        void onSuccess();
+        void onSuccess(Trip trip);
     }
     public interface CarNameResponseListener {
         void onSuccess(ArrayList<String> carName);
@@ -431,5 +541,15 @@ public class ApiUtilities {
         void onSuccess();
         void onFailure();
     }
+
+
+    public interface AcceptTripListener {
+        void onSuccess(User user);
+        void onFailure();
+    }
+    public interface TripInformationListener {
+        void onSuccess(Trip trip);
+    }
+
 
 }

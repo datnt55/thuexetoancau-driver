@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.widget.Toast;
 
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -29,6 +30,7 @@ import grab.com.thuexetoancau.driver.model.Position;
 import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
+import grab.com.thuexetoancau.driver.utilities.Global;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
 
 import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
@@ -91,7 +93,22 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                new CountDownTimer(30000, 1000) {
+                final NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseMessagingService.this)
+                        .setAutoCancel(true)
+                        .setContentTitle("Thuê xe toàn cầu driver")
+                        .setContentText("Có một cuốc mới dành cho bạn. Bấm vào đây để chấp nhận")
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                        .setVibrate(new long[] {1, 1, 1});
+                Intent intent = new Intent(FirebaseMessagingService.this,ListBookingAroundActivity.class);
+                intent.putExtra(Defines.BUNDLE_TRIP_BACKGROUND,trip);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessagingService.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+                builder.setContentIntent(pendingIntent);
+                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                manager.notify(0,builder.build());
+
+                Global.countDownTimer = new CountDownTimer(30000, 1000) {
 
                     public void onTick(long millisUntilFinished) {
                     }
@@ -114,20 +131,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 }.start();
             }
         });
-        final NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseMessagingService.this)
-                .setAutoCancel(true)
-                .setContentTitle("Thuê xe toàn cầu driver")
-                .setContentText("Có một cuốc mới dành cho bạn. Bấm vào đây để chấp nhận")
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setVibrate(new long[] {1, 1, 1});
-        Intent intent = new Intent(FirebaseMessagingService.this,ListBookingAroundActivity.class);
-        intent.putExtra(Defines.BUNDLE_TRIP_BACKGROUND,trip);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessagingService.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(pendingIntent);
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.notify(0,builder.build());
+
     }
 
     private boolean isAppInForeground(Context context)
