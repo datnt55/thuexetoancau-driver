@@ -17,6 +17,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.model.Trip;
+import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
@@ -58,13 +59,15 @@ public class SplashActivity extends AppCompatActivity {
             ApiUtilities mApi = new ApiUtilities(this);
             mApi.login(preference.getPhone(), "1234", new ApiUtilities.LoginResponseListener() {
                 @Override
-                public void onSuccess(Trip trip) {
+                public void onSuccess(User user, Trip trip) {
                     Intent intent = null;
                     if (trip != null) {
                         intent = new Intent(mContext, AcceptBookingActivity.class);
+                        intent.putExtra(Defines.BUNDLE_USER, user);
                         intent.putExtra(Defines.BUNDLE_TRIP, trip);
                     }else {
                         intent = new Intent(mContext, ListBookingAroundActivity.class);
+                        intent.putExtra(Defines.BUNDLE_USER, user);
                     }
                     startActivity(intent);
                     finish();

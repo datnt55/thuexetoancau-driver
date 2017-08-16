@@ -24,7 +24,7 @@
     <!-- GPS Dialog-->
     <string name="notice">Thông báo</string>
     <string name="gps_notice_content">Chức năng này cần lấy vị trí hiện tại của bạn.Bạn có muốn bật định vị</string>
-    <string name="gps_continue">Tiếp tục</string>
+    <string name="gps_continue">Tôi đã hiểu</string>
     <string name="gps_no">Không</string>
     <string name="getting_location">Đang lấy vị trí...</string>
 

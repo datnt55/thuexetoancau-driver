@@ -67,9 +67,9 @@ public class ApiUtilities {
                             JSONObject booking = data.getJSONObject("booking_data");
                             trip = parseBookingData(booking);
                         }
-                        saveVehicleInfor(driverData);
+                        User user = saveVehicleInfor(driverData);
                         if (listener != null)
-                            listener.onSuccess(trip);
+                            listener.onSuccess(user, trip);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -92,23 +92,37 @@ public class ApiUtilities {
         });
     }
 
-    private void saveVehicleInfor(JSONObject result) {
+    private User saveVehicleInfor(JSONObject result) {
+        User user = null;
         SharePreference preference = new SharePreference(mContext);
         try {
-
             int id = result.getInt("id");
             preference.saveDriverId(id);
             String name = result.getString("name");
             preference.saveName(name);
             String phone = result.getString("phone");
             preference.savePhone(phone);
-
             String carNumber = result.getString("car_number");
             preference.saveCarNumber(carNumber);
+            String email = result.getString("email");
+            String carModel = result.getString("car_model");
+            String carMade = result.getString("car_made");
+            String carYears = result.getString("car_years");
+            int carSize = result.getInt("car_size");
+            String carType = result.getString("car_type");
+            long carPrice =0;
+            if (!result.getString("car_price").equals("null"))
+                carPrice = result.getLong("car_price");
+            long totalMoneys = result.getLong("total_moneys");
+            String province = result.getString("province");
+            String cardIdentify = result.getString("card_identify");
+            String license = result.getString("license");
+            user = new User(name,phone,email,carModel,carMade,carYears,carSize,carNumber,carType,carPrice,totalMoneys, province,cardIdentify,license);
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        return user;
     }
 
     public void requestCarName(String carMade, final CarNameResponseListener listener) {
@@ -151,12 +165,12 @@ public class ApiUtilities {
         });
     }
 
-    public void getBookingAround(double lat, double lon, final AroundBookingListener listener) {
+    public void getBookingAround(double lat, double lon,int status, final AroundBookingListener listener) {
         RequestParams params;
         params = new RequestParams();
         params.put("lat",lat);
         params.put("lon",lon);
-        params.put("ready", 1);
+        params.put("ready", status);
         Log.e("params deleteDelivery", params.toString());
         BaseService.getHttpClient().post(Defines.URL_LIST_BOOKING_AROUND,params, new AsyncHttpResponseHandler() {
 
@@ -531,7 +545,7 @@ public class ApiUtilities {
     }
 
     public interface LoginResponseListener {
-        void onSuccess(Trip trip);
+        void onSuccess(User user, Trip trip);
     }
     public interface CarNameResponseListener {
         void onSuccess(ArrayList<String> carName);

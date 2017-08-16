@@ -5,14 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +20,12 @@ import grab.com.thuexetoancau.driver.utilities.CommonUtilities;
  * Created by DatNT on 7/19/2017.
  */
 
-public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdapter.ViewHolder> {
+public class BookingImmediateAroundAdapter extends RecyclerView.Adapter<BookingImmediateAroundAdapter.ViewHolder> {
     private Context mContext;
     private List<Trip> arrayTrip;
     private OnItemClickListener listener;
 
-    public BookingAroundAdapter(Context context, ArrayList<Trip> vehicle) {
+    public BookingImmediateAroundAdapter(Context context, ArrayList<Trip> vehicle) {
         mContext = context;
         this.arrayTrip = vehicle;
     }
@@ -42,7 +36,7 @@ public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdap
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_list_car_booking, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_list_immediate_booking, viewGroup, false);
         return new ViewHolder(view);
     }
 
@@ -63,15 +57,6 @@ public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdap
                     listener.onClicked(arrayTrip.get(position));
             }
         });
-        DateTimeFormatter dtf;
-        if (arrayTrip.get(position).getBookingTime().contains(".")) {
-            dtf = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        }else{
-            dtf = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
-        }
-        DateTime dateTime = dtf.parseDateTime(arrayTrip.get(position).getBookingTime());
-        holder.txtStartDate.setText(dateTime.getDayOfMonth()+"/"+dateTime.getMonthOfYear()+"/"+dateTime.getYear());
-        holder.txtStartTime.setText(dateTime.getHourOfDay()+":"+dateTime.getMinuteOfHour());
         holder.txtDistance.setText(CommonUtilities.convertToKilometer(arrayTrip.get(position).getDistance()));
         holder.txtPrice.setText(CommonUtilities.convertCurrency(arrayTrip.get(position).getPrice())+" vnđ");
     }
@@ -95,8 +80,6 @@ public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdap
         TextView txtTripType;
         ImageView imgAccept;
         TextView txtCustomer;
-        TextView txtStartTime;
-        TextView txtStartDate;
         TextView txtDistance;
         TextView txtPrice;
 
@@ -106,8 +89,6 @@ public class BookingAroundAdapter extends RecyclerView.Adapter<BookingAroundAdap
             txtDestination = (TextView) itemView.findViewById(R.id.txt_to);
             txtCarSize = (TextView) itemView.findViewById(R.id.txt_car_type);
             txtTripType = (TextView) itemView.findViewById(R.id.txt_trip_type);
-            txtStartTime = (TextView) itemView.findViewById(R.id.txt_time);
-            txtStartDate = (TextView) itemView.findViewById(R.id.txt_date);
             txtDistance = (TextView) itemView.findViewById(R.id.txt_distance);
             txtPrice = (TextView) itemView.findViewById(R.id.txt_price);
             txtCustomer = (TextView) itemView.findViewById(R.id.txt_customer_name);

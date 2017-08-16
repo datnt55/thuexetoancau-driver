@@ -32,12 +32,6 @@ public class DialogUtils {
                                 mActivity.startActivityForResult(callGPSSettingIntent,1000);
                             }
                         });
-        alertDialogBuilder.setNegativeButton(R.string.gps_no,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
     }

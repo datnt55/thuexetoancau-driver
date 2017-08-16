@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import grab.com.thuexetoancau.driver.R;
+import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.BaseService;
 import grab.com.thuexetoancau.driver.utilities.Defines;
@@ -375,6 +376,17 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
                     preference.saveName(edtName.getText().toString());
                     preference.saveCarNumber(edtCarNumber.getText().toString());
                     Intent intent = new Intent(mContext, ListBookingAroundActivity.class);
+                    String name =  edtName.getText().toString();
+                    String phone =  edtPhone.getText().toString();
+                    String carMade =  txtCarMade.getText().toString();
+                    String carModel =  txtCarModel.getText().toString();
+                    String carYear =  txtCarYear.getText().toString();
+                    String carType =  txtCarType.getText().toString();
+                    String carNumber =  edtCarNumber.getText().toString();
+                    String identity =  edtIdendify.getText().toString();
+                    String license =  edtLicense.getText().toString();
+                    User user = new User(name,phone,"",carModel,carMade,carYear,Integer.valueOf(size),carNumber,carType,0,0,"",identity,license);
+                    intent.putExtra(Defines.BUNDLE_USER, user);
                     startActivity(intent);
                     finish();
 

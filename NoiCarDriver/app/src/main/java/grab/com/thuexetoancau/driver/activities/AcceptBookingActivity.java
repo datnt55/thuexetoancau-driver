@@ -82,6 +82,8 @@ public class AcceptBookingActivity extends AppCompatActivity implements
     private BottomNavigationView navigation;
     private ApiUtilities mApi;
     private Button btnFinishTrip;
+    private User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -181,7 +183,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
                 .target(currentLocation.getPosition())             // Sets the center of the map to current location
                 .zoom(16)                   // Sets the zoom
                 .tilt(45)                   // Sets the tilt of the camera to 0 degrees
-                .build();                   // Creates a CameraPosition from the builder
+                .build();                   // Creates BookingLongTripAroundAdapter CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
         sendRequestFindDirection();
     }
@@ -315,7 +317,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
                 .target(currentLocation.getPosition())             // Sets the center of the map to current location
                 .zoom(16)                   // Sets the zoom
                 .tilt(45)                   // Sets the tilt of the camera to 0 degrees
-                .build();                   // Creates a CameraPosition from the builder
+                .build();                   // Creates BookingLongTripAroundAdapter CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 

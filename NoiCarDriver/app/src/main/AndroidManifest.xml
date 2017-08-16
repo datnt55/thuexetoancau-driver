@@ -47,7 +47,8 @@
         <activity android:name=".activities.ListBookingAroundActivity" />
         <activity android:name=".activities.AcceptBookingActivity" />
         <activity android:name=".activities.BaseActivity" />
-        <activity android:name=".activities.ProgressTripActivity"></activity>
+        <activity android:name=".activities.ProgressTripActivity" />
+        <activity android:name=".activities.ScheduleTripActivity"></activity>
     </application>
 
 </manifest>

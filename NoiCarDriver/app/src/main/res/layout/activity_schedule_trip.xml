@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="grab.com.thuexetoancau.driver.activities.LoginActivity">
+    tools:context="grab.com.thuexetoancau.driver.activities.ScheduleTripActivity">
 
 </android.support.constraint.ConstraintLayout>

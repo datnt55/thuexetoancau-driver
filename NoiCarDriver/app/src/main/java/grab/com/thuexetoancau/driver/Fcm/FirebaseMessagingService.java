@@ -53,8 +53,28 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                     broadcastManager.sendBroadcast(intent);
                 }else
                     responseForPassenger(trip);
-            }else if (functionCase.equals(Defines.CASE_FOUND_DRIVER)){
-
+            }
+        }else if (function.equals(Defines.FUNCTION_RECEIVE_TRIP)){
+            String receiveCase = remoteMessage.getData().get("case");
+            if (receiveCase.equals(Defines.CASE_CANCEL_TRIP)) {
+                if (isAppInForeground(this)) {
+                    final Intent intent = new Intent(Defines.BROADCAST_CANCEL_TRIP);
+                    // You can also include some extra data.
+                    final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+                    broadcastManager.sendBroadcast(intent);
+                }else
+                    showNotification("Khách đã hủy chuyến đi");
+            }
+        }else if (function.equals(Defines.FUNCTION_CANCEL_TRIP)){
+            String receiveCase = remoteMessage.getData().get("case");
+            if (receiveCase.equals(Defines.CASE_SUCCESS)) {
+                if (isAppInForeground(this)) {
+                    final Intent intent = new Intent(Defines.BROADCAST_CANCEL_TRIP);
+                    // You can also include some extra data.
+                    final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+                    broadcastManager.sendBroadcast(intent);
+                }else
+                    showNotification("Khách đã hủy chuyến đi");
             }
         }
     }
@@ -132,6 +152,22 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             }
         });
 
+    }
+
+    private void showNotification(String message) {
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseMessagingService.this)
+                .setAutoCancel(true)
+                .setContentTitle("Thuê xe toàn cầu driver")
+                .setContentText(message)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setVibrate(new long[] {1, 1, 1});
+        Intent intent = new Intent(FirebaseMessagingService.this,ListBookingAroundActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessagingService.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.notify(0,builder.build());
     }
 
     private boolean isAppInForeground(Context context)

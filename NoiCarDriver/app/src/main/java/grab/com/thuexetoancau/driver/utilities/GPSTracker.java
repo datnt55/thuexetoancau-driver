@@ -45,7 +45,7 @@ public class GPSTracker extends Service implements LocationListener {
 	private static final float LONGITUDE_TO_KILOMETER_AT_ZERO_LATITUDE = 111.320f;
 	private static final float KILOMETER_TO_METER = 1000.0f;
 	private static final float LATITUDE_TO_KILOMETER = 111.133f;
-	// Declaring a Position Manager
+	// Declaring BookingLongTripAroundAdapter Position Manager
 	protected LocationManager locationManager;
 	private LocateListener listener;
 	private static final double SQUARE_ROOT_TWO = Math.sqrt(2);
