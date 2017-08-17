@@ -1,23 +1,30 @@
 package grab.com.thuexetoancau.driver.activities;
 
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.PorterDuff;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.adapter.ViewPagerAdapter;
@@ -26,12 +33,13 @@ import grab.com.thuexetoancau.driver.fragment.LongRoadBookFragment;
 import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.thread.DriverLocation;
+import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.Global;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
 import grab.com.thuexetoancau.driver.widget.AcceptBookDialog;
 
-public class ListBookingAroundActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class ListBookingAroundActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private Context mContext;
     private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -42,26 +50,85 @@ public class ListBookingAroundActivity extends BaseActivity implements Navigatio
     };
     private SharePreference preference;
     private User user;
+    private int bookingId;
+    private AcceptBookDialog dialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_booking_around);
         preference = new SharePreference(this);
         mContext = this;
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiverTrip, new IntentFilter(Defines.BROADCAST_FOUND_CUSTOMER));
+        LocalBroadcastManager.getInstance(this).registerReceiver(cancelTrip, new IntentFilter(Defines.BROADCAST_CANCEL_TRIP));
 
-        if (getIntent().hasExtra(Defines.BUNDLE_TRIP_BACKGROUND)){
-            Trip trip = (Trip) getIntent().getSerializableExtra(Defines.BUNDLE_TRIP_BACKGROUND);
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            AcceptBookDialog dialog = new AcceptBookDialog();
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(Defines.BUNDLE_TRIP,trip);
-            dialog.setArguments(bundle);
-            dialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
-            dialog.setCancelable(false);
-            dialog.show(fragmentManager, "Input Dialog");
-            Global.countDownTimer.cancel();
+        if (getIntent().hasExtra(Defines.BUNDLE_FOUND_CUSTOMER)){
+            if (user == null){
+                ApiUtilities mApi = new ApiUtilities(this);
+                mApi.login(preference.getPhone(), "1234", new ApiUtilities.LoginResponseListener() {
+                    @Override
+                    public void onSuccess(User mUser, Trip mtrip) {
+                        user = mUser;
+                        Trip trip = (Trip) getIntent().getSerializableExtra(Defines.BUNDLE_TRIP_BACKGROUND);
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        AcceptBookDialog dialog = new AcceptBookDialog();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable(Defines.BUNDLE_TRIP,trip);
+                        dialog.setArguments(bundle);
+                        dialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
+                        dialog.setCancelable(false);
+                        dialog.show(fragmentManager, "Input Dialog");
+                        Global.countDownTimer.cancel();
+                    }
+                });
+            }
+
         }
+
         initComponents();
+    }
+    BroadcastReceiver receiverTrip = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                if (Global.countDownTimer != null) {
+                    Log.e("COUNTER","cancel");
+                    Global.countDownTimer.cancel();
+                }
+                Trip trip = (Trip) intent.getSerializableExtra(Defines.BUNDLE_TRIP);
+                bookingId = trip.getId();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                dialog = new AcceptBookDialog();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(Defines.BUNDLE_TRIP, trip);
+                dialog.setArguments(bundle);
+                dialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
+                dialog.setCancelable(false);
+                getSupportFragmentManager().beginTransaction().add(dialog, "tag").commitAllowingStateLoss();
+            } catch (IllegalStateException e) {
+            }
+        }
+    };
+
+    BroadcastReceiver cancelTrip = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                bookingId = intent.getIntExtra(Defines.BUNDLE_BOOKING_ID,0);
+                if (dialog.getDialog().isShowing()){
+                    dialog.dismiss();
+                }
+                Toast.makeText(ListBookingAroundActivity.this, "Khách đã hủy chuyến đi",Toast.LENGTH_SHORT).show();
+            } catch (IllegalStateException e) {
+            }
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(Defines.NOTIFY_TAG, bookingId);
     }
 
     private void initComponents() {
@@ -87,6 +154,7 @@ public class ListBookingAroundActivity extends BaseActivity implements Navigatio
         imgAvatar.setImageResource(R.drawable.driver);
         if (getIntent().hasExtra(Defines.BUNDLE_USER)) {
             user = (User) getIntent().getSerializableExtra(Defines.BUNDLE_USER);
+            txtName.setText(user.getName());
             if (!user.getEmail().equals("null"))
                 txtEmail.setText(user.getEmail());
             else
@@ -207,5 +275,4 @@ public class ListBookingAroundActivity extends BaseActivity implements Navigatio
 
         return super.onOptionsItemSelected(item);
     }
-
 }

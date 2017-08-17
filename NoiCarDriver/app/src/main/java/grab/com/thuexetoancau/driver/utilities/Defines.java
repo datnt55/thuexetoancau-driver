@@ -63,6 +63,10 @@ public class Defines {
     public static final String BUNDLE_TRIP_DATE= "bundle trip date";
 
     public static final String BROADCAST_CANCEL_TRIP = "broadcast cancel Trip";
+    public static final String BROADCAST_FOUND_CUSTOMER = "broadcast found customer";
+
+    public static final String BUNDLE_FOUND_CUSTOMER = "bundle found customer";
+    public static final String BUNDLE_BOOKING_ID = "bundle booking id";
     // Main Screen Dimension, will be set when app startup
 
     // Notification
@@ -72,5 +76,8 @@ public class Defines {
     public static final String CASE_FOUND_DRIVER = "founddriver";
     public static final String CASE_CANCEL_TRIP = "cancelTrip";
     public static final String CASE_SUCCESS = "success";
+
+    // Notification tag
+    public static final String NOTIFY_TAG = "notify tag";
 
 }

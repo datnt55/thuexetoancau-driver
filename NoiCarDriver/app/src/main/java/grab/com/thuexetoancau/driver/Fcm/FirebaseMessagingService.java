@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.messaging.RemoteMessage;
@@ -41,40 +42,44 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     public void onMessageReceived(RemoteMessage remoteMessage) {
         //responseForPassenger("Có một cuốc mới dành cho bạn");
         String function = remoteMessage.getData().get("function");
+        Log.e("FUNCTION",function);
         if (function.equals(Defines.FUNCTION_BOOK_GRAB)){
             String functionCase = remoteMessage.getData().get("case");
             if (functionCase.equals(Defines.CASE_FOUND_DRIVER)){
                 Trip trip = handleFoundDriver(remoteMessage.getData());
+                if (!isAppInForeground(this))
+                    responseForPassenger(trip);
                 if (isAppInForeground(this)) {
-                    final Intent intent = new Intent("newBooking");
+                    final Intent intent = new Intent(Defines.BROADCAST_FOUND_CUSTOMER);
                     // You can also include some extra data.
                     final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
                     intent.putExtra(Defines.BUNDLE_TRIP,trip);
                     broadcastManager.sendBroadcast(intent);
                 }else
                     responseForPassenger(trip);
+
             }
-        }else if (function.equals(Defines.FUNCTION_RECEIVE_TRIP)){
+        }/*else if (function.equals(Defines.FUNCTION_RECEIVE_TRIP)){
             String receiveCase = remoteMessage.getData().get("case");
             if (receiveCase.equals(Defines.CASE_CANCEL_TRIP)) {
-                if (isAppInForeground(this)) {
-                    final Intent intent = new Intent(Defines.BROADCAST_CANCEL_TRIP);
-                    // You can also include some extra data.
-                    final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-                    broadcastManager.sendBroadcast(intent);
-                }else
-                    showNotification("Khách đã hủy chuyến đi");
+                String bookingId = remoteMessage.getData().get("id_booking");
+                final Intent intent = new Intent(Defines.BROADCAST_CANCEL_TRIP);
+                intent.putExtra(Defines.BUNDLE_BOOKING_ID,Integer.valueOf(bookingId));
+                final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+                broadcastManager.sendBroadcast(intent);
+                if (!isAppInForeground(this))
+                    cancelTrip();
             }
-        }else if (function.equals(Defines.FUNCTION_CANCEL_TRIP)){
+        }*/else if (function.equals(Defines.FUNCTION_CANCEL_TRIP)){
             String receiveCase = remoteMessage.getData().get("case");
             if (receiveCase.equals(Defines.CASE_SUCCESS)) {
-                if (isAppInForeground(this)) {
-                    final Intent intent = new Intent(Defines.BROADCAST_CANCEL_TRIP);
-                    // You can also include some extra data.
-                    final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-                    broadcastManager.sendBroadcast(intent);
-                }else
-                    showNotification("Khách đã hủy chuyến đi");
+                String bookingId = remoteMessage.getData().get("id_booking");
+                final Intent intent = new Intent(Defines.BROADCAST_CANCEL_TRIP);
+                intent.putExtra(Defines.BUNDLE_BOOKING_ID,Integer.valueOf(bookingId));
+                final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+                broadcastManager.sendBroadcast(intent);
+                if (!isAppInForeground(this))
+                    cancelTrip();
             }
         }
     }
@@ -121,12 +126,13 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                         .setVibrate(new long[] {1, 1, 1});
                 Intent intent = new Intent(FirebaseMessagingService.this,ListBookingAroundActivity.class);
+                intent.putExtra(Defines.BUNDLE_FOUND_CUSTOMER,true);
                 intent.putExtra(Defines.BUNDLE_TRIP_BACKGROUND,trip);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessagingService.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
                 builder.setContentIntent(pendingIntent);
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                manager.notify(0,builder.build());
+                manager.notify(Defines.NOTIFY_TAG,trip.getId(), builder.build());
 
                 Global.countDownTimer = new CountDownTimer(30000, 1000) {
 
@@ -136,15 +142,18 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                         SharePreference preference = new SharePreference(FirebaseMessagingService.this);
                         ApiUtilities mApi = new ApiUtilities(FirebaseMessagingService.this);
                         mApi.driverNoReceiverTrip(trip.getId(),preference.getDriverId(),null);
+                        Intent intent = new Intent(FirebaseMessagingService.this,ListBookingAroundActivity.class);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessagingService.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
                         final NotificationCompat.Builder notification = new NotificationCompat.Builder(FirebaseMessagingService.this)
                                 .setAutoCancel(true)
                                 .setContentTitle("Thuê xe toàn cầu driver")
                                 .setContentText("Bạn đã lỡ 1 chuyến đi")
                                 .setSmallIcon(R.mipmap.ic_launcher)
+                                .setContentIntent(pendingIntent)
                                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                                 .setVibrate(new long[] {1, 1, 1});
                         NotificationManager managerCancel = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                        managerCancel.notify(0,notification.build());
+                        managerCancel.notify(Defines.NOTIFY_TAG,trip.getId(), builder.build());
                         return;
                     }
 
@@ -154,15 +163,15 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
     }
 
-    private void showNotification(String message) {
+    private void cancelTrip() {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseMessagingService.this)
                 .setAutoCancel(true)
                 .setContentTitle("Thuê xe toàn cầu driver")
-                .setContentText(message)
+                .setContentText("Khách đã hủy chuyến đi")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setVibrate(new long[] {1, 1, 1});
-        Intent intent = new Intent(FirebaseMessagingService.this,ListBookingAroundActivity.class);
+        Intent intent = new Intent(FirebaseMessagingService.this,SplashActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessagingService.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);

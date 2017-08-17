@@ -94,7 +94,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
             public void onFinish() {
                 progress.setProgress(0);
                 cancelTrip();
-                AcceptBookDialog.this.dismiss();
+                AcceptBookDialog.this.dismissAllowingStateLoss();
             }
 
        }.start();
@@ -135,7 +135,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
 
             @Override
             public void onFailure() {
-
+                dismiss();
             }
         });
     }
