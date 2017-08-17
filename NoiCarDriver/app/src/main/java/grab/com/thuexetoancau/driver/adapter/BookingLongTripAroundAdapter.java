@@ -40,7 +40,7 @@ public class BookingLongTripAroundAdapter extends RecyclerView.Adapter<BookingLo
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_list_immediate_booking, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_list_long_trip_booking, viewGroup, false);
         return new ViewHolder(view);
     }
 
@@ -62,7 +62,7 @@ public class BookingLongTripAroundAdapter extends RecyclerView.Adapter<BookingLo
             }
         });
         DateTimeFormatter dtf;
-        if (arrayTrip.get(position).getBookingTime().contains(".")) {
+        if (arrayTrip.get(position).getStartTime().contains(".")) {
             dtf = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         }else{
             dtf = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");

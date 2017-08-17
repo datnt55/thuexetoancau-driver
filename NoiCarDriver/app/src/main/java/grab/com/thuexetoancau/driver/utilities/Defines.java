@@ -60,7 +60,8 @@ public class Defines {
     public static final String BUNDLE_NOTIFY_TRIP = "bundle notify trip";
     public static final String BUNDLE_CUSTOMER_NAME = "bundle customer name";
     public static final String BUNDLE_PRICE= "bundle price";
-    public static final String BUNDLE_TRIP_DATE= "bundle trip date";
+    public static final String BUNDLE_TRIP_DATE = "bundle trip date";
+    public static final String BUNDLE_DRIVER_ID = "bundle driver id";
 
     public static final String BROADCAST_CANCEL_TRIP = "broadcast cancel Trip";
     public static final String BROADCAST_FOUND_CUSTOMER = "broadcast found customer";

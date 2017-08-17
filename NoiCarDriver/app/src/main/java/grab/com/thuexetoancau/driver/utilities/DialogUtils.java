@@ -36,6 +36,29 @@ public class DialogUtils {
         alert.show();
     }
 
+    public static void confirmReiceverTrip(final Activity mActivity, final YesNoListenter listenter) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mActivity);
+        alertDialogBuilder.setTitle(R.string.notice);  // GPS not found
+        alertDialogBuilder.setMessage(R.string.confirm_receive_trip)
+                .setCancelable(false)
+                .setPositiveButton(R.string.confirm,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                if (listenter != null)
+                                    listenter.onYes();
+                                dialog.dismiss();
+                            }
+                        })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+    }
+
     public static void showDialogNetworkError(Context mContext, final TryAgain again){
         AlertDialog dialog = new AlertDialog.Builder(mContext)
                 .setTitle(mContext.getString(R.string.app_name))

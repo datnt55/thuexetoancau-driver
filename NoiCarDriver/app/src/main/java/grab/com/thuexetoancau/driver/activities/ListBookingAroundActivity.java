@@ -63,6 +63,9 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         LocalBroadcastManager.getInstance(this).registerReceiver(cancelTrip, new IntentFilter(Defines.BROADCAST_CANCEL_TRIP));
 
         if (getIntent().hasExtra(Defines.BUNDLE_FOUND_CUSTOMER)){
+            Global.countDownTimer.cancel();
+            if (Global.count != null)
+                Global.count.cancel();
             if (user == null){
                 ApiUtilities mApi = new ApiUtilities(this);
                 mApi.login(preference.getPhone(), "1234", new ApiUtilities.LoginResponseListener() {
@@ -74,11 +77,12 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
                         AcceptBookDialog dialog = new AcceptBookDialog();
                         Bundle bundle = new Bundle();
                         bundle.putSerializable(Defines.BUNDLE_TRIP,trip);
+                        bundle.putInt(Defines.BUNDLE_DRIVER_ID, preference.getDriverId());
                         dialog.setArguments(bundle);
                         dialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
                         dialog.setCancelable(false);
                         dialog.show(fragmentManager, "Input Dialog");
-                        Global.countDownTimer.cancel();
+
                     }
                 });
             }
@@ -101,6 +105,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
                 dialog = new AcceptBookDialog();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(Defines.BUNDLE_TRIP, trip);
+                bundle.putInt(Defines.BUNDLE_DRIVER_ID, preference.getDriverId());
                 dialog.setArguments(bundle);
                 dialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
                 dialog.setCancelable(false);

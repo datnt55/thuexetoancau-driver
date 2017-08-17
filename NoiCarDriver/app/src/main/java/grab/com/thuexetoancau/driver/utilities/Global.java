@@ -23,4 +23,5 @@ public class Global {
     public static int totalDistance                             = 0;
     public static boolean inTrip                                = false;
     public static CountDownTimer countDownTimer;
+    public static CountDownTimer count;
 }

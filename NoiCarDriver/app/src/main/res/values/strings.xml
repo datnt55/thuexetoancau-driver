@@ -12,6 +12,7 @@
     <string name="text_price_notice">Giá bạn trả phải lớn hơn giá mua ngay</string>
     <string name="ok">OK</string>
     <string name="cancel">Hủy</string>
+    <string name="confirm">Đồng ý</string>
     <string name="notice_close_app">Bấm lần nữa để thoát</string>
 
     <string name="select_action">Chọn hoạt động</string>
@@ -97,5 +98,6 @@
     <string name="offline">Ngoại tuyến</string>
     <string name="online">Trực tuyến</string>
     <string name="end_trip">Hoàn thành chuyến đi</string>
+    <string name="confirm_receive_trip">Bạn có chắc chắn nhận chuyến đi?</string>
 </resources>
 

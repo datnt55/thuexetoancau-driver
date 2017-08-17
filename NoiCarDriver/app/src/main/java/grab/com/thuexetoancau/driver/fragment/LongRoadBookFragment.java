@@ -18,6 +18,7 @@ import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.activities.AcceptBookingActivity;
 import grab.com.thuexetoancau.driver.adapter.BookingLongTripAroundAdapter;
 import grab.com.thuexetoancau.driver.model.Trip;
+import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.DialogUtils;
@@ -37,9 +38,11 @@ public class LongRoadBookFragment extends Fragment implements  SwipeRefreshLayou
     private SwipeRefreshLayout swipeRefresh;
     private ApiUtilities mApi;
     private GPSTracker gpsTracker;
+    private SharePreference preference;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        preference = new SharePreference(getActivity());
         View rootView = inflater.inflate(R.layout.fragment_immediately_book, container, false);
         initComponents(rootView);
         return rootView;
@@ -134,10 +137,31 @@ public class LongRoadBookFragment extends Fragment implements  SwipeRefreshLayou
     }
 
     @Override
-    public void onClicked(Trip trip) {
-        Intent intent = new Intent(getActivity(), AcceptBookingActivity.class);
-        intent.putExtra(Defines.BUNDLE_TRIP, trip);
-        startActivity(intent);
-        getActivity().finish();
+    public void onClicked(final Trip trip) {
+        DialogUtils.confirmReiceverTrip(getActivity(), new DialogUtils.YesNoListenter() {
+            @Override
+            public void onYes() {
+                mApi.receivedTrip(trip.getId(),preference.getDriverId(), new ApiUtilities.AcceptTripListener() {
+                    @Override
+                    public void onSuccess(User user) {
+                        Intent intent = new Intent(getActivity(), AcceptBookingActivity.class);
+                        trip.setCustomerName(user.getName());
+                        trip.setCustomerPhone(user.getPhone());
+                        intent.putExtra(Defines.BUNDLE_TRIP,trip);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+
+                    @Override
+                    public void onFailure() {
+                    }
+                });
+            }
+
+            @Override
+            public void onNo() {
+
+            }
+        });
     }
 }

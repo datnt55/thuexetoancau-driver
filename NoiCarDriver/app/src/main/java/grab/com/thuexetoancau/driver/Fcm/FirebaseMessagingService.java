@@ -49,14 +49,13 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 Trip trip = handleFoundDriver(remoteMessage.getData());
                 if (!isAppInForeground(this))
                     responseForPassenger(trip);
-                if (isAppInForeground(this)) {
-                    final Intent intent = new Intent(Defines.BROADCAST_FOUND_CUSTOMER);
-                    // You can also include some extra data.
-                    final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-                    intent.putExtra(Defines.BUNDLE_TRIP,trip);
-                    broadcastManager.sendBroadcast(intent);
-                }else
-                    responseForPassenger(trip);
+                final Intent intent = new Intent(Defines.BROADCAST_FOUND_CUSTOMER);
+                // You can also include some extra data.
+                final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+                intent.putExtra(Defines.BUNDLE_TRIP,trip);
+                broadcastManager.sendBroadcast(intent);
+
+
 
             }
         }/*else if (function.equals(Defines.FUNCTION_RECEIVE_TRIP)){
@@ -129,7 +128,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 intent.putExtra(Defines.BUNDLE_FOUND_CUSTOMER,true);
                 intent.putExtra(Defines.BUNDLE_TRIP_BACKGROUND,trip);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessagingService.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessagingService.this,0,intent,PendingIntent.FLAG_CANCEL_CURRENT);
                 builder.setContentIntent(pendingIntent);
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 manager.notify(Defines.NOTIFY_TAG,trip.getId(), builder.build());
@@ -140,6 +139,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                     }
                     public void onFinish() {
                         SharePreference preference = new SharePreference(FirebaseMessagingService.this);
+                        Log.e("COUNTER","finish");
                         ApiUtilities mApi = new ApiUtilities(FirebaseMessagingService.this);
                         mApi.driverNoReceiverTrip(trip.getId(),preference.getDriverId(),null);
                         Intent intent = new Intent(FirebaseMessagingService.this,ListBookingAroundActivity.class);
@@ -153,7 +153,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                                 .setVibrate(new long[] {1, 1, 1});
                         NotificationManager managerCancel = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                        managerCancel.notify(Defines.NOTIFY_TAG,trip.getId(), builder.build());
+                        managerCancel.notify(Defines.NOTIFY_TAG,trip.getId(), notification.build());
                         return;
                     }
 

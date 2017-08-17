@@ -1,14 +1,18 @@
 package grab.com.thuexetoancau.driver.widget;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
-import android.os.Build;
+import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.IdRes;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,28 +21,19 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.TimePicker;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.activities.AcceptBookingActivity;
+import grab.com.thuexetoancau.driver.activities.ListBookingAroundActivity;
 import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.CommonUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
-import grab.com.thuexetoancau.driver.utilities.SharePreference;
+import grab.com.thuexetoancau.driver.utilities.Global;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * Created by DatNT on 8/2/2017.
@@ -52,7 +47,8 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
     private TextView txtSource, txtSourceSecond;
     private TextView txtDestination, txtDestinationSecond;
     private TextView txtDistance, txtPrice;
-    private CountDownTimer count;
+    private int driverId;
+    private Context mContext;
 
     public AcceptBookDialog() {
 
@@ -62,6 +58,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
         Bundle bundle = getArguments();
         trip = (Trip) bundle.getSerializable(Defines.BUNDLE_TRIP);
+        driverId = bundle.getInt(Defines.BUNDLE_DRIVER_ID);
         View view = inflater.inflate(R.layout.dialog_new_booking, container);
         initComponents(view);
         return view;
@@ -81,20 +78,34 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
         txtDestinationSecond.setText( trip.getListStopPoints().get(size-1).getSecondText());
         txtDistance.setText(CommonUtilities.convertToKilometer(trip.getDistance()));
         txtPrice.setText(CommonUtilities.convertCurrency(trip.getPrice())+" vnđ");
-        mApi = new ApiUtilities(getActivity());
+        mApi = new ApiUtilities(mContext);
         progress = (ArcProgress) view.findViewById(R.id.arc_progress);
         btnAccept = (Button) view.findViewById(R.id.btn_accept);
         btnAccept.setOnClickListener(this);
-        count = new CountDownTimer(30000, 1000) {
+        Global.count = new CountDownTimer(30000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 progress.setProgress(30 - (int) millisUntilFinished/1000);
             }
 
             public void onFinish() {
+                Global.count = null;
+                Log.e("TRIP","cancel");
                 progress.setProgress(0);
                 cancelTrip();
                 AcceptBookDialog.this.dismissAllowingStateLoss();
+                Intent intent = new Intent(mContext,ListBookingAroundActivity.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(mContext,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+                final NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext)
+                        .setAutoCancel(true)
+                        .setContentTitle("Thuê xe toàn cầu driver")
+                        .setContentText("Bạn đã lỡ 1 chuyến đi")
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentIntent(pendingIntent)
+                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                        .setVibrate(new long[] {1, 1, 1});
+                NotificationManager managerCancel = (NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
+                managerCancel.notify(Defines.NOTIFY_TAG,trip.getId(), notification.build());
             }
 
        }.start();
@@ -103,8 +114,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
     }
 
     private void cancelTrip() {
-        SharePreference preference = new SharePreference(getActivity());
-        mApi.driverNoReceiverTrip(trip.getId(), preference.getDriverId(), new ApiUtilities.CancelTripListener() {
+        mApi.driverNoReceiverTrip(trip.getId(), driverId, new ApiUtilities.CancelTripListener() {
             @Override
             public void onSuccess() {
             }
@@ -118,19 +128,19 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
 
 
     private void acceptTrip() {
-        SharePreference preference = new SharePreference(getActivity());
-        mApi.receivedTrip(trip.getId(), preference.getDriverId(), new ApiUtilities.AcceptTripListener() {
+        mApi.receivedTrip(trip.getId(),driverId, new ApiUtilities.AcceptTripListener() {
             @Override
             public void onSuccess(User user) {
-                count.cancel();
+                Global.count.cancel();
+                Global.count = null;
                 dismiss();
-                Intent intent = new Intent(getActivity(), AcceptBookingActivity.class);
+                Intent intent = new Intent(mContext, AcceptBookingActivity.class);
                 trip.setCustomerName(user.getName());
                 trip.setCustomerPhone(user.getPhone());
                 intent.putExtra(Defines.BUNDLE_TRIP,trip);
                 intent.putExtra(Defines.BUNDLE_NOTIFY_TRIP,"");
                 startActivity(intent);
-                getActivity().finish();
+                ((Activity)mContext).finish();
             }
 
             @Override
@@ -157,7 +167,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new Dialog(getActivity(), getTheme()){
+        return new Dialog(mContext, getTheme()){
             @Override
             public void onBackPressed() {
                 //AcceptBookDialog.this.dismiss();
@@ -173,5 +183,11 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
                 acceptTrip();
                 break;
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.mContext = context;
     }
 }
