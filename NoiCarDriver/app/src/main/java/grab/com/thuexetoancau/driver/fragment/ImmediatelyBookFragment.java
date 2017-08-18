@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.activities.AcceptBookingActivity;
+import grab.com.thuexetoancau.driver.activities.ListBookingAroundActivity;
 import grab.com.thuexetoancau.driver.adapter.BookingImmediateAroundAdapter;
 import grab.com.thuexetoancau.driver.adapter.BookingLongTripAroundAdapter;
 import grab.com.thuexetoancau.driver.model.Trip;
@@ -45,6 +46,18 @@ public class ImmediatelyBookFragment extends Fragment implements  SwipeRefreshLa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         preference = new SharePreference(getActivity());
+        ((ListBookingAroundActivity) getActivity()).changeStateListener(new ListBookingAroundActivity.ChangeStateListener() {
+            @Override
+            public void onRefresh() {
+                gpsTracker = new GPSTracker(getActivity());
+                if (gpsTracker.handlePermissionsAndGetLocation()) {
+                    if (!gpsTracker.canGetLocation()) {
+                        DialogUtils.settingRequestTurnOnLocation(getActivity());
+                    } else
+                        getDataFromServer();
+                }
+            }
+        });
         View rootView = inflater.inflate(R.layout.fragment_immediately_book, container, false);
         initComponents(rootView);
         return rootView;

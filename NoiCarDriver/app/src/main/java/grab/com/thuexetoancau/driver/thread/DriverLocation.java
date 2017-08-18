@@ -92,7 +92,7 @@ public class DriverLocation implements Runnable {
 
             @Override
             public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
-                Log.i("JSON", new String(responseBody));
+                Log.i("JSON", "error");
             }
 
             @Override

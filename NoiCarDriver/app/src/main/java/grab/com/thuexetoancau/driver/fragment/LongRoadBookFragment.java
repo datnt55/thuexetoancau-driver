@@ -16,6 +16,8 @@ import java.util.ArrayList;
 
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.activities.AcceptBookingActivity;
+import grab.com.thuexetoancau.driver.activities.ListBookingAroundActivity;
+import grab.com.thuexetoancau.driver.activities.ScheduleTripActivity;
 import grab.com.thuexetoancau.driver.adapter.BookingLongTripAroundAdapter;
 import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.model.User;
@@ -44,6 +46,18 @@ public class LongRoadBookFragment extends Fragment implements  SwipeRefreshLayou
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         preference = new SharePreference(getActivity());
         View rootView = inflater.inflate(R.layout.fragment_immediately_book, container, false);
+        ((ListBookingAroundActivity) getActivity()).changeStateListener(new ListBookingAroundActivity.ChangeStateListener() {
+            @Override
+            public void onRefresh() {
+                gpsTracker = new GPSTracker(getActivity());
+                if (gpsTracker.handlePermissionsAndGetLocation()) {
+                    if (!gpsTracker.canGetLocation()) {
+                        DialogUtils.settingRequestTurnOnLocation(getActivity());
+                    } else
+                        getDataFromServer();
+                }
+            }
+        });
         initComponents(rootView);
         return rootView;
     }
@@ -144,12 +158,8 @@ public class LongRoadBookFragment extends Fragment implements  SwipeRefreshLayou
                 mApi.receivedTrip(trip.getId(),preference.getDriverId(), new ApiUtilities.AcceptTripListener() {
                     @Override
                     public void onSuccess(User user) {
-                        Intent intent = new Intent(getActivity(), AcceptBookingActivity.class);
-                        trip.setCustomerName(user.getName());
-                        trip.setCustomerPhone(user.getPhone());
-                        intent.putExtra(Defines.BUNDLE_TRIP,trip);
+                        Intent intent = new Intent(getActivity(), ScheduleTripActivity.class);
                         startActivity(intent);
-                        getActivity().finish();
                     }
 
                     @Override

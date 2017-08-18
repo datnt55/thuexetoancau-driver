@@ -18,6 +18,7 @@ public class Defines {
     public static  final String URL_CONFIRM_TRIP                = HOSTNAME + "api2/confirmTrip";
     public static  final String URL_NO_ACCEPT_TRIP              = HOSTNAME + "api2/noReceivedTrip";
     public static  final String URL_GET_TRIP_INFO              = HOSTNAME + "api2/getTripInfo";
+    public static  final String URL_GET_LIST_SCHEDULE          = HOSTNAME + "api2/getListScheduleDriver";
     public static  final String URL_GET_CAR_TYPE            = HOSTNAME + "api/getListCarType";
     public static  final String URL_GET_CAR_MADE            = HOSTNAME + "api/getCarMadeList";
     public static  final String URL_GET_CAR_MODEL           = HOSTNAME + "api/getCarModelListFromMade";

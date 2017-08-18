@@ -52,6 +52,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
     private User user;
     private int bookingId;
     private AcceptBookDialog dialog;
+    private ChangeStateListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +135,8 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         super.onResume();
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(Defines.NOTIFY_TAG, bookingId);
+        if (listener != null)
+            listener.onRefresh();
     }
 
     private void initComponents() {
@@ -206,6 +209,10 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         viewPager.setAdapter(adapter);
     }
 
+    public void changeStateListener (ChangeStateListener listener){
+        this.listener = listener;
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -228,13 +235,12 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
             Intent intent = new Intent(mContext, SplashActivity.class);
             startActivity(intent);
             finish();
-        } else if (id == R.id.nav_gallery) {
-
+        } else if (id == R.id.nav_schedule) {
+            Intent schedule = new Intent(mContext, ScheduleTripActivity.class);
+            startActivity(schedule);
         } else if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_manage) {
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -259,7 +265,6 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
             item.setIcon(ContextCompat.getDrawable(mContext,R.drawable.item_offline));
             item.setTitle(getString(R.string.offline));
         }
-
         return super.onPrepareOptionsMenu(menu);
     }
     @Override
@@ -276,8 +281,15 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
                 item.setIcon(ContextCompat.getDrawable(mContext,R.drawable.item_online));
                 item.setTitle(getString(R.string.online));
             }
+            if (listener != null)
+                listener.onRefresh();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public interface ChangeStateListener {
+        void onRefresh();
     }
 }
