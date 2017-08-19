@@ -33,7 +33,7 @@ public class ApiUtilities {
         this.mContext = mContext;
     }
 
-    public void login(final String phone, String pass, final LoginResponseListener listener) {
+    public void login(final String phone, final String pass, final LoginResponseListener listener) {
         RequestParams params;
         params = new RequestParams();
         params.put("phone", phone);
@@ -68,6 +68,8 @@ public class ApiUtilities {
                             JSONObject booking = data.getJSONObject("booking_data");
                             trip = parseBookingData(booking);
                         }
+                        SharePreference preference = new SharePreference(mContext);
+                        preference.savePassword(pass);
                         User user = saveVehicleInfor(driverData);
                         if (listener != null)
                             listener.onSuccess(user, trip);

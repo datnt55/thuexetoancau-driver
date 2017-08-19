@@ -43,6 +43,8 @@
                     android:id="@+id/customer_from"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:lines="1"
+                    android:ellipsize="end"
                     android:layout_weight="1"
                     android:text="Lamboghini Aventador" />
 
@@ -51,6 +53,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:lines="1"
+                    android:ellipsize="end"
                     android:text="Lamboghini Aventador" />
 
                 <TextView

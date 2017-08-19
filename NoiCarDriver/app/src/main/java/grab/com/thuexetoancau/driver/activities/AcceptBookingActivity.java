@@ -123,22 +123,13 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         txtSource.setText(customerTrip.getListStopPoints().get(0).getFullPlace());
         int size = customerTrip.getListStopPoints().size();
         txtDestination.setText(customerTrip.getListStopPoints().get(size - 1).getFullPlace());
-        txtNote.setText(customerTrip.getNote());
+        if(customerTrip.getNote().equals("null"))
+            txtNote.setText("");
+        else
+            txtNote.setText(customerTrip.getNote());
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Chi tiết chuyến đi");
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

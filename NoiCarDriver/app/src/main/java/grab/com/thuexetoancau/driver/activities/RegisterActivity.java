@@ -375,6 +375,7 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
                     preference.savePhone(edtPhone.getText().toString());
                     preference.saveName(edtName.getText().toString());
                     preference.saveCarNumber(edtCarNumber.getText().toString());
+                    preference.savePassword(edtPass.getText().toString());
                     Intent intent = new Intent(mContext, ListBookingAroundActivity.class);
                     String name =  edtName.getText().toString();
                     String phone =  edtPhone.getText().toString();

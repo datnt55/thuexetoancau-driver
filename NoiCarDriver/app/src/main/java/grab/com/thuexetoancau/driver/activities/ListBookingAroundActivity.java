@@ -1,5 +1,6 @@
 package grab.com.thuexetoancau.driver.activities;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -35,6 +36,7 @@ import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.thread.DriverLocation;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
+import grab.com.thuexetoancau.driver.utilities.DialogUtils;
 import grab.com.thuexetoancau.driver.utilities.Global;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
 import grab.com.thuexetoancau.driver.widget.AcceptBookDialog;
@@ -44,10 +46,10 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private int[] tabIcons = {
+    /*private int[] tabIcons = {
             R.drawable.ic_close_black_24dp,
             R.drawable.car_connected
-    };
+    };*/
     private SharePreference preference;
     private User user;
     private int bookingId;
@@ -69,7 +71,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
                 Global.count.cancel();
             if (user == null){
                 ApiUtilities mApi = new ApiUtilities(this);
-                mApi.login(preference.getPhone(), "1234", new ApiUtilities.LoginResponseListener() {
+                mApi.login(preference.getPhone(), preference.getPassword(), new ApiUtilities.LoginResponseListener() {
                     @Override
                     public void onSuccess(User mUser, Trip mtrip) {
                         user = mUser;
@@ -179,9 +181,9 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
     private void setupTabView() {
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
-        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
-        tabLayout.getTabAt(0).getIcon().setColorFilter(ContextCompat.getColor(mContext, R.color.blue_light), PorterDuff.Mode.SRC_IN);
+       /* tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+        tabLayout.getTabAt(1).setIcon(tabIcons[1]);*/
+    /*    tabLayout.getTabAt(0).getIcon().setColorFilter(ContextCompat.getColor(mContext, R.color.blue_light), PorterDuff.Mode.SRC_IN);
         tabLayout.getTabAt(1).getIcon().setColorFilter(ContextCompat.getColor(mContext, R.color.grey_1), PorterDuff.Mode.SRC_IN);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -199,13 +201,13 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
             public void onTabReselected(TabLayout.Tab tab) {
 
             }
-        });
+        });*/
     }
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(new ImmediatelyBookFragment(),getResources().getString(R.string.information));
-        adapter.addFrag(new LongRoadBookFragment(), getResources().getString(R.string.map));
+        adapter.addFrag(new ImmediatelyBookFragment(),"Chuyến đi ngay");
+        adapter.addFrag(new LongRoadBookFragment(), "Chuyến đi sau");
         viewPager.setAdapter(adapter);
     }
 
@@ -230,16 +232,24 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         int id = item.getItemId();
 
         if (id == R.id.nav_log_out) {
-            SharePreference preference = new SharePreference(this);
-            preference.saveDriverId(0);
-            Intent intent = new Intent(mContext, SplashActivity.class);
-            startActivity(intent);
-            finish();
+            DialogUtils.showLoginDialog((Activity) mContext, new DialogUtils.YesNoListenter() {
+                @Override
+                public void onYes() {
+                    SharePreference preference = new SharePreference(mContext);
+                    preference.saveDriverId(0);
+                    Intent intent = new Intent(mContext, SplashActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                @Override
+                public void onNo() {
+
+                }
+            });
+
         } else if (id == R.id.nav_schedule) {
             Intent schedule = new Intent(mContext, ScheduleTripActivity.class);
             startActivity(schedule);
-        } else if (id == R.id.nav_slideshow) {
-
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

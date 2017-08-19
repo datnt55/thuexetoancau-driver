@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,7 +21,10 @@ import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
+import grab.com.thuexetoancau.driver.utilities.PermissionUtils;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
+
+import static android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
 
 public class SplashActivity extends AppCompatActivity {
     private SharePreference preference;
@@ -29,6 +33,13 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (PermissionUtils.checkAndRequestPermissions(this)){
+            initComponents();
+        }
+
+    }
+
+    private void initComponents() {
         setContentView(R.layout.activity_splash);
         mContext = this;
         preference = new SharePreference(this);
@@ -37,10 +48,6 @@ public class SplashActivity extends AppCompatActivity {
         frameAnimation.start();
         FirebaseInstanceId.getInstance().getToken();
         FirebaseMessaging.getInstance().subscribeToTopic("test");
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
         if (preference.getRegId().equals("")) {
             LocalBroadcastManager.getInstance(this).registerReceiver(tokenReceiver, new IntentFilter("tokenReceiver"));
         }else {
@@ -51,13 +58,26 @@ public class SplashActivity extends AppCompatActivity {
                 }
             }, 2000);
         }
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PermissionUtils.REQUEST_ID_MULTIPLE_PERMISSIONS)
+            if ((grantResults.length > 0 && grantResults[0] == PERMISSION_GRANTED))
+                initComponents();
     }
 
     private void goToApplication() {
         if (preference.getDriverId() != 0){
             ApiUtilities mApi = new ApiUtilities(this);
-            mApi.login(preference.getPhone(), "1234", new ApiUtilities.LoginResponseListener() {
+            mApi.login(preference.getPhone(), preference.getPassword(), new ApiUtilities.LoginResponseListener() {
                 @Override
                 public void onSuccess(User user, Trip trip) {
                     Intent intent = null;

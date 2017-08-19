@@ -16,7 +16,7 @@ public class SharePreference {
     private String PHONE         = "customer phone";
     private String CAR_NUMBER   = "car number";
     private String STATUS       = "status";
-    private String TEMP_PHONE   = "temp phone";
+    private String PASSWORD   = "pass";
     // constructor
     public SharePreference(Context activity) {
         this.activity = activity;
@@ -109,15 +109,15 @@ public class SharePreference {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
         return sp.getInt(STATUS,0);
     }
-    public void saveTempPhone(String phone) {
+    public void savePassword(String pass) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
         SharedPreferences.Editor editor = sp.edit();
-        editor.putString(TEMP_PHONE, phone);
+        editor.putString(PASSWORD, pass);
         editor.apply();
     }
-    public String getTempPhone() {
+    public String getPassword() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
-        return sp.getString(TEMP_PHONE, "");
+        return sp.getString(PASSWORD, "");
     }
 
 }
