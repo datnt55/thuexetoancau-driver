@@ -5,11 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -21,6 +24,8 @@ import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
+import grab.com.thuexetoancau.driver.utilities.DialogUtils;
+import grab.com.thuexetoancau.driver.utilities.GPSTracker;
 import grab.com.thuexetoancau.driver.utilities.PermissionUtils;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
 
@@ -30,8 +35,15 @@ public class SplashActivity extends AppCompatActivity {
     private SharePreference preference;
     private ImageView imgLoading;
     private Context mContext;
+    private GPSTracker gpsTracker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            w.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            // w.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
         super.onCreate(savedInstanceState);
         if (PermissionUtils.checkAndRequestPermissions(this)){
             initComponents();
@@ -40,6 +52,11 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void initComponents() {
+        gpsTracker = new GPSTracker(this);
+        if (!gpsTracker.canGetLocation()) {
+            DialogUtils.settingRequestTurnOnLocation(this);
+            return;
+        }
         setContentView(R.layout.activity_splash);
         mContext = this;
         preference = new SharePreference(this);
@@ -69,15 +86,16 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PermissionUtils.REQUEST_ID_MULTIPLE_PERMISSIONS)
+        if (requestCode == PermissionUtils.REQUEST_ID_MULTIPLE_PERMISSIONS) {
             if ((grantResults.length > 0 && grantResults[0] == PERMISSION_GRANTED))
                 initComponents();
+        }
     }
 
     private void goToApplication() {
         if (preference.getDriverId() != 0){
             ApiUtilities mApi = new ApiUtilities(this);
-            mApi.login(preference.getPhone(), preference.getPassword(), new ApiUtilities.LoginResponseListener() {
+            mApi.login(preference.getPhone(), preference.getPassword(),null, new ApiUtilities.LoginResponseListener() {
                 @Override
                 public void onSuccess(User user, Trip trip) {
                     Intent intent = null;
@@ -100,6 +118,13 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Defines.REQUEST_LOCATION_ENABLE){
+            initComponents();
+        }
+    }
 
     BroadcastReceiver tokenReceiver = new BroadcastReceiver() {
         @Override

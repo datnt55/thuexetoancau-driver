@@ -71,7 +71,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
                 Global.count.cancel();
             if (user == null){
                 ApiUtilities mApi = new ApiUtilities(this);
-                mApi.login(preference.getPhone(), preference.getPassword(), new ApiUtilities.LoginResponseListener() {
+                mApi.login(preference.getPhone(), preference.getPassword(),null, new ApiUtilities.LoginResponseListener() {
                     @Override
                     public void onSuccess(User mUser, Trip mtrip) {
                         user = mUser;

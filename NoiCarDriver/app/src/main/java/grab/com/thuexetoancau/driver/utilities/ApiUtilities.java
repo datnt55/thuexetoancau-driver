@@ -33,7 +33,7 @@ public class ApiUtilities {
         this.mContext = mContext;
     }
 
-    public void login(final String phone, final String pass, final LoginResponseListener listener) {
+    public void login(final String phone, final String pass, final ProgressDialog dialog, final LoginResponseListener listener) {
         RequestParams params;
         params = new RequestParams();
         params.put("phone", phone);
@@ -73,7 +73,10 @@ public class ApiUtilities {
                         User user = saveVehicleInfor(driverData);
                         if (listener != null)
                             listener.onSuccess(user, trip);
-                    }
+                    }else
+                        Toast.makeText(mContext,json.getString("message"),Toast.LENGTH_SHORT).show();
+                    if (dialog != null)
+                        dialog.dismiss();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -84,6 +87,8 @@ public class ApiUtilities {
                 // called when response HTTP status is "4XX" (eg. 401, 403, 404)
                 //Toast.makeText(getContext(), getResources().getString(R.string.check_network), Toast.LENGTH_SHORT).show();
                 // dialog.dismiss();
+                if (dialog != null)
+                    dialog.dismiss();
             }
 
             @Override
@@ -91,6 +96,8 @@ public class ApiUtilities {
                 // called when request is retried
                 //Toast.makeText(getContext(), getResources().getString(R.string.check_network), Toast.LENGTH_SHORT).show();
                 //  dialog.dismiss();
+                if (dialog != null)
+                    dialog.dismiss();
             }
         });
     }
@@ -531,7 +538,7 @@ public class ApiUtilities {
                         if (listener != null)
                             listener.onSuccess(trip);
                     }
-                    Toast.makeText(mContext, json.getString("message"), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mContext, json.getString("message"), Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

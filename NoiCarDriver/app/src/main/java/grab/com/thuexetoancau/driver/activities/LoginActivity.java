@@ -87,7 +87,12 @@ public class LoginActivity extends AppCompatActivity {
             requestFocus(edtPass);
             return;
         }
-        mApi.login(phone, pass, new ApiUtilities.LoginResponseListener() {
+         final ProgressDialog dialog = new ProgressDialog(mContext);
+        dialog.setMessage("Đang tải dữ liệu");
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.show();
+        mApi.login(phone, pass,dialog, new ApiUtilities.LoginResponseListener() {
             @Override
             public void onSuccess(User user, Trip trip) {
                 Intent intent = null;

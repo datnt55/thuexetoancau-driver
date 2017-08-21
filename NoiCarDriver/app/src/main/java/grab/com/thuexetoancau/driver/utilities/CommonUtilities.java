@@ -285,7 +285,7 @@ public class CommonUtilities {
             case 5:
                 return "Taxi 5 chỗ";
             case 8:
-                return "Taxi 8 chỗ";
+                return "Xe 8 chỗ";
             case 16:
                 return "Xe 16 chỗ";
             case 30:

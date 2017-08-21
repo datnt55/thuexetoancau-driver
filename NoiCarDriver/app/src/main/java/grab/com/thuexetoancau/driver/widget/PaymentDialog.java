@@ -68,7 +68,7 @@ public class PaymentDialog extends DialogFragment implements View.OnClickListene
 
         txtCustomerName.setText(customerName);
         txtDate.setText(tripDate);
-        txtPrice.setText(CommonUtilities.convertCurrency(price) +"vnđ");
+        txtPrice.setText(CommonUtilities.convertCurrency(price) +" vnđ");
         btnFinishTrip.setOnClickListener(this);
     }
 

@@ -36,20 +36,36 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".activities.SplashActivity">
+        <activity
+            android:name=".activities.SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.LoginActivity" />
-        <activity android:name=".activities.RegisterActivity" />
-        <activity android:name=".activities.ListBookingAroundActivity" />
-        <activity android:name=".activities.AcceptBookingActivity" />
-        <activity android:name=".activities.BaseActivity" />
-        <activity android:name=".activities.ProgressTripActivity" />
-        <activity android:name=".activities.ScheduleTripActivity"></activity>
+        <activity
+            android:name=".activities.LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.RegisterActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ListBookingAroundActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.AcceptBookingActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.BaseActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ProgressTripActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ScheduleTripActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
