@@ -36,7 +36,9 @@ public class DriverLocation implements Runnable {
         try {
             while (true) {
                 Log.e("TAG","loop");
-                sendLocationToServer();
+                if (Global.receiveTrip) {
+                    sendLocationToServer();
+                }
                 Thread.sleep(Global.LOOP_TIME);
             }
         } catch (InterruptedException e) {
@@ -60,7 +62,8 @@ public class DriverLocation implements Runnable {
         });
 
         if (Global.inTrip) {
-            Global.totalDistance += CommonUtilities.distanceInMeter(prevLatLn, new LatLng(latitude, longtitude));
+            if (prevLatLn != null)
+                Global.totalDistance += CommonUtilities.distanceInMeter(prevLatLn, new LatLng(latitude, longtitude));
         }
         prevLatLn = new LatLng(latitude, longtitude);
         params.put("car_number", preference.getCarNumber());

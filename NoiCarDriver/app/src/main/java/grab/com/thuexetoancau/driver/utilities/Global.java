@@ -22,6 +22,7 @@ public class Global {
     public static int LOOP_TIME                                 = 10000;
     public static int totalDistance                             = 0;
     public static boolean inTrip                                = false;
+    public static boolean receiveTrip                                = false;
     public static CountDownTimer countDownTimer;
     public static CountDownTimer count;
 }

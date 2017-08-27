@@ -65,13 +65,13 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         LocalBroadcastManager.getInstance(this).registerReceiver(receiverTrip, new IntentFilter(Defines.BROADCAST_FOUND_CUSTOMER));
         LocalBroadcastManager.getInstance(this).registerReceiver(cancelTrip, new IntentFilter(Defines.BROADCAST_CANCEL_TRIP));
 
-        if (getIntent().hasExtra(Defines.BUNDLE_FOUND_CUSTOMER)){
+        if (getIntent().hasExtra(Defines.BUNDLE_FOUND_CUSTOMER)) {
             Global.countDownTimer.cancel();
             if (Global.count != null)
                 Global.count.cancel();
-            if (user == null){
+            if (user == null) {
                 ApiUtilities mApi = new ApiUtilities(this);
-                mApi.login(preference.getPhone(), preference.getPassword(),null, new ApiUtilities.LoginResponseListener() {
+                mApi.login(preference.getPhone(), preference.getPassword(), null, new ApiUtilities.LoginResponseListener() {
                     @Override
                     public void onSuccess(User mUser, Trip mtrip) {
                         user = mUser;
@@ -79,7 +79,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
                         FragmentManager fragmentManager = getSupportFragmentManager();
                         AcceptBookDialog dialog = new AcceptBookDialog();
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable(Defines.BUNDLE_TRIP,trip);
+                        bundle.putSerializable(Defines.BUNDLE_TRIP, trip);
                         bundle.putInt(Defines.BUNDLE_DRIVER_ID, preference.getDriverId());
                         dialog.setArguments(bundle);
                         dialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
@@ -94,14 +94,17 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
 
         initComponents();
     }
+
     BroadcastReceiver receiverTrip = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
                 if (Global.countDownTimer != null) {
-                    Log.e("COUNTER","cancel");
+                    Log.e("COUNTER", "cancel");
                     Global.countDownTimer.cancel();
                 }
+                if (Global.count != null)
+                    Global.count.cancel();
                 Trip trip = (Trip) intent.getSerializableExtra(Defines.BUNDLE_TRIP);
                 bookingId = trip.getId();
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -122,11 +125,12 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
-                bookingId = intent.getIntExtra(Defines.BUNDLE_BOOKING_ID,0);
-                if (dialog.getDialog().isShowing()){
-                    dialog.dismiss();
-                }
-                Toast.makeText(ListBookingAroundActivity.this, "Khách đã hủy chuyến đi",Toast.LENGTH_SHORT).show();
+                bookingId = intent.getIntExtra(Defines.BUNDLE_BOOKING_ID, 0);
+                if (dialog != null)
+                    if (dialog.getDialog().isShowing()) {
+                        dialog.dismiss();
+                    }
+                Toast.makeText(ListBookingAroundActivity.this, "Khách đã hủy chuyến đi", Toast.LENGTH_SHORT).show();
             } catch (IllegalStateException e) {
             }
         }
@@ -135,7 +139,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
     @Override
     protected void onResume() {
         super.onResume();
-        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(Defines.NOTIFY_TAG, bookingId);
         if (listener != null)
             listener.onRefresh();
@@ -147,7 +151,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         getSupportActionBar().setTitle("Chuyến xe quanh đây");
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        tabLayout = (TabLayout)   findViewById(R.id.tabs);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
         setupTabView();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -159,7 +163,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         navigationView.setNavigationItemSelectedListener(this);
         TextView txtName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.txt_name);
         TextView txtEmail = (TextView) navigationView.getHeaderView(0).findViewById(R.id.txt_email);
-        ImageView imgEdit= (ImageView) navigationView.getHeaderView(0).findViewById(R.id.img_edit);
+        ImageView imgEdit = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.img_edit);
         ImageView imgAvatar = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.avatar);
         imgAvatar.setImageResource(R.drawable.driver);
         if (getIntent().hasExtra(Defines.BUNDLE_USER)) {
@@ -169,7 +173,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
                 txtEmail.setText(user.getEmail());
             else
                 txtEmail.setText("");
-        }else {
+        } else {
             txtName.setText(preference.getName());
             txtEmail.setText("");
         }
@@ -206,12 +210,12 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(new ImmediatelyBookFragment(),"Chuyến đi ngay");
+        adapter.addFrag(new ImmediatelyBookFragment(), "Chuyến đi ngay");
         adapter.addFrag(new LongRoadBookFragment(), "Chuyến đi sau");
         viewPager.setAdapter(adapter);
     }
 
-    public void changeStateListener (ChangeStateListener listener){
+    public void changeStateListener(ChangeStateListener listener) {
         this.listener = listener;
     }
 
@@ -230,26 +234,33 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        switch (id){
+            case R.id.nav_history:
+                Intent intentHisroty = new Intent(mContext, HistoryTripActivity.class);
+                intentHisroty.putExtra(Defines.BUNDLE_USER, preference.getDriverId());
+                startActivity(intentHisroty);
+                break;
+            case R.id.nav_log_out:
+                DialogUtils.showLoginDialog((Activity) mContext, new DialogUtils.YesNoListenter() {
+                    @Override
+                    public void onYes() {
+                        SharePreference preference = new SharePreference(mContext);
+                        preference.saveDriverId(0);
+                        Intent intent = new Intent(mContext, SplashActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
 
-        if (id == R.id.nav_log_out) {
-            DialogUtils.showLoginDialog((Activity) mContext, new DialogUtils.YesNoListenter() {
-                @Override
-                public void onYes() {
-                    SharePreference preference = new SharePreference(mContext);
-                    preference.saveDriverId(0);
-                    Intent intent = new Intent(mContext, SplashActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-                @Override
-                public void onNo() {
+                    @Override
+                    public void onNo() {
 
-                }
-            });
-
-        } else if (id == R.id.nav_schedule) {
-            Intent schedule = new Intent(mContext, ScheduleTripActivity.class);
-            startActivity(schedule);
+                    }
+                });
+                break;
+            case R.id.nav_schedule:
+                Intent schedule = new Intent(mContext, ScheduleTripActivity.class);
+                startActivity(schedule);
+                break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -263,32 +274,34 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         SharePreference preference = new SharePreference(this);
         MenuItem item = menu.findItem(R.id.action_status);
         // set your desired icon here based on BookingLongTripAroundAdapter flag if you like
-        if (preference.getStatus() == 0){
-            item.setIcon(ContextCompat.getDrawable(mContext,R.drawable.item_online));
+        if (preference.getStatus() == 0) {
+            item.setIcon(ContextCompat.getDrawable(mContext, R.drawable.item_online));
             item.setTitle(getString(R.string.online));
-        }else {
-            item.setIcon(ContextCompat.getDrawable(mContext,R.drawable.item_offline));
+        } else {
+            item.setIcon(ContextCompat.getDrawable(mContext, R.drawable.item_offline));
             item.setTitle(getString(R.string.offline));
         }
         return super.onPrepareOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_status) {
             SharePreference preference = new SharePreference(this);
-            if (preference.getStatus() == 0){
+            if (preference.getStatus() == 0) {
                 preference.saveStatus(1);
-                item.setIcon(ContextCompat.getDrawable(mContext,R.drawable.item_offline));
+                item.setIcon(ContextCompat.getDrawable(mContext, R.drawable.item_offline));
                 item.setTitle(getString(R.string.offline));
-            }else {
+            } else {
                 preference.saveStatus(0);
-                item.setIcon(ContextCompat.getDrawable(mContext,R.drawable.item_online));
+                item.setIcon(ContextCompat.getDrawable(mContext, R.drawable.item_online));
                 item.setTitle(getString(R.string.online));
             }
             if (listener != null)

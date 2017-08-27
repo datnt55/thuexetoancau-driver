@@ -66,6 +66,9 @@
         <activity
             android:name=".activities.ScheduleTripActivity"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".activities.HistoryTripActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

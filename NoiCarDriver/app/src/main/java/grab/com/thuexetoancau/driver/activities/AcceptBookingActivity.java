@@ -89,6 +89,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accept_booking);
         mContext = this;
+        Global.receiveTrip = true;
         mApi = new ApiUtilities(this);
         if (getIntent().hasExtra(Defines.BUNDLE_TRIP)) {
             customerTrip = (Trip) getIntent().getSerializableExtra(Defines.BUNDLE_TRIP);
@@ -280,6 +281,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
                     @Override
                     public void onSuccess() {
                         Global.inTrip = false;
+                        Global.receiveTrip = false;
                         Intent intent = new Intent(AcceptBookingActivity.this, ListBookingAroundActivity.class);
                         startActivity(intent);
                         finish();
@@ -352,6 +354,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
     @Override
     public void onFinishTrip() {
         Global.inTrip = false;
+        Global.receiveTrip = false;
         Intent intent = new Intent(AcceptBookingActivity.this, ListBookingAroundActivity.class);
         startActivity(intent);
         finish();

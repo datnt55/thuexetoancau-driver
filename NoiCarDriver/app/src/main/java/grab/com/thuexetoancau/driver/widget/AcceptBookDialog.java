@@ -22,6 +22,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.activities.AcceptBookingActivity;
@@ -41,7 +42,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class AcceptBookDialog extends DialogFragment implements View.OnClickListener{
     private ArcProgress progress;
-    private Button btnAccept;
+    private Button btnAccept, btnDeny;
     private ApiUtilities mApi;
     private Trip trip;
     private TextView txtSource, txtSourceSecond;
@@ -81,7 +82,9 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
         mApi = new ApiUtilities(mContext);
         progress = (ArcProgress) view.findViewById(R.id.arc_progress);
         btnAccept = (Button) view.findViewById(R.id.btn_accept);
+        btnDeny = (Button) view.findViewById(R.id.btn_deny);
         btnAccept.setOnClickListener(this);
+        btnDeny.setOnClickListener(this);
         Global.count = new CountDownTimer(30000, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -93,7 +96,6 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
                 Log.e("TRIP","cancel");
                 progress.setProgress(0);
                 cancelTrip();
-                AcceptBookDialog.this.dismissAllowingStateLoss();
                 Intent intent = new Intent(mContext,ListBookingAroundActivity.class);
                 PendingIntent pendingIntent = PendingIntent.getActivity(mContext,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
                 final NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext)
@@ -117,6 +119,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
         mApi.driverNoReceiverTrip(trip.getId(), driverId, new ApiUtilities.CancelTripListener() {
             @Override
             public void onSuccess() {
+                AcceptBookDialog.this.dismissAllowingStateLoss();
             }
 
             @Override
@@ -128,12 +131,13 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
 
 
     private void acceptTrip() {
+        Global.count.cancel();
+        Global.count = null;
         mApi.receivedTrip(trip.getId(),driverId, new ApiUtilities.AcceptTripListener() {
             @Override
             public void onSuccess(User user) {
-                Global.count.cancel();
-                Global.count = null;
-                dismiss();
+                AcceptBookDialog.this.dismissAllowingStateLoss();
+                Global.receiveTrip = true;
                 Intent intent = new Intent(mContext, AcceptBookingActivity.class);
                 trip.setCustomerName(user.getName());
                 trip.setCustomerPhone(user.getPhone());
@@ -145,7 +149,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
 
             @Override
             public void onFailure() {
-                dismiss();
+
             }
         });
     }
@@ -181,6 +185,11 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
         switch (v.getId()){
             case R.id.btn_accept:
                 acceptTrip();
+                break;
+            case R.id.btn_deny:
+                Global.count.cancel();
+                Global.count = null;
+                cancelTrip();
                 break;
         }
     }

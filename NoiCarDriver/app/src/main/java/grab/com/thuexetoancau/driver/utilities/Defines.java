@@ -22,7 +22,7 @@ public class Defines {
     public static  final String URL_GET_CAR_TYPE            = HOSTNAME + "api/getListCarType";
     public static  final String URL_GET_CAR_MADE            = HOSTNAME + "api/getCarMadeList";
     public static  final String URL_GET_CAR_MODEL           = HOSTNAME + "api/getCarModelListFromMade";
-    public static  final String URL_GET_AIRPORT             = HOSTNAME + "api/getAirportName";
+    public static  final String URL_GET_HISTORY            = HOSTNAME + "api2/getHistoryTripForDriver";
     public static  final String URL_BOOKING_LOG             = HOSTNAME + "api/bookingLog";
     public static  final String URL_GET_CAR_SIZE            = HOSTNAME + "api/getCarSize";
     public static  final String URL_GET_CAR_HIRE_TYPE       = HOSTNAME + "api/getCarHireType";

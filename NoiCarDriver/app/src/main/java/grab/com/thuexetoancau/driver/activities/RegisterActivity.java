@@ -16,6 +16,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,15 +38,17 @@ import grab.com.thuexetoancau.driver.utilities.SharePreference;
 
 public class RegisterActivity extends AppCompatActivity implements GetAllRegisterCarData.onDataReceived {
     private EditText edtName, edtPhone, edtPass, edtIdendify, edtLicense, edtCarNumber;
-    private EditText txtCarMade, txtCarSize, txtCarYear, txtCarType;
+    private EditText txtCarMade, txtCarSize, txtCarYear, txtCarType, txtNoicarType, txtNoicarTaxi;
     private TextView txtWarn;
     private TextView txtCarModel;
     private Context mContext;
     private Button btnRegister;
     private ProgressDialog dialog;
-    private ArrayList<String> aCarMade, arrCarModel, aCarType, aCarSize;
+    private ArrayList<String> aCarMade, arrCarModel, aCarType, aCarSize, aNoiCarType, aNoiCarTaxi;
     private SharePreference preference;
     private String size;
+    private int noiCarType = 0, isCar = 1;
+    private LinearLayout layoutNoiCarType, layoutNoicarTaxi;
     private ApiUtilities mApi;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,18 +74,23 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
         txtCarSize  = (EditText)    findViewById(R.id.edt_size);
         txtCarYear  = (EditText)    findViewById(R.id.edt_year);
         txtCarType  = (EditText)    findViewById(R.id.edt_car_type);
-
+        txtNoicarType= (EditText)    findViewById(R.id.edt_noicar_type);
+        txtNoicarTaxi= (EditText)    findViewById(R.id.edt_noicar_taxi);
         txtWarn     = (TextView)    findViewById(R.id.txt_warn);
 
         txtCarModel = (TextView)    findViewById(R.id.edt_car_model);
 
         btnRegister = (Button)      findViewById(R.id.btn_confirm);
+
+        layoutNoiCarType = (LinearLayout) findViewById(R.id.layout_noicar_type);
+        layoutNoicarTaxi = (LinearLayout) findViewById(R.id.layout_noicar_taxi);
+
         btnRegister.setOnClickListener(register_driver_listener);
         txtCarYear.setOnClickListener(click_to_produce_year_listener);
         txtCarMade.setOnClickListener(click_to_car_made_listener);
-        txtCarType.setOnClickListener(click_to_car_type_listener);
+        txtNoicarTaxi.setOnClickListener(click_to_noicar_taxi_listener);
         txtCarSize.setOnClickListener(click_to_car_size_listener);
-
+        txtNoicarType.setOnClickListener(click_to_noicar_type_listener);
         txtCarModel.setOnClickListener(click_to_car_model_listener);
     }
     @Override
@@ -179,6 +187,27 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
 
         }
     };
+
+    private View.OnClickListener click_to_noicar_taxi_listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setTitle("Chọn loại hình")
+                    .setSingleChoiceItems(aNoiCarTaxi.toArray(new CharSequence[aNoiCarTaxi.size()]),-1, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            isCar = which;
+                            String type =aNoiCarTaxi.get(which);
+                            txtNoicarTaxi.setText(type);
+                            dialog.dismiss();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+
+        }
+    };
+
     private View.OnClickListener click_to_car_size_listener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -190,6 +219,15 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
                             String type =aCarSize.get(which);
                             size = type.split(" ")[0];
                             txtCarSize.setText(type);
+                            if (size.equals("5") | size.equals("8")) {
+                                layoutNoiCarType.setVisibility(View.VISIBLE);
+                                layoutNoicarTaxi.setVisibility(View.VISIBLE);
+                            } else {
+                                layoutNoiCarType.setVisibility(View.GONE);
+                                layoutNoicarTaxi.setVisibility(View.GONE);
+                                noiCarType = 0;
+                                isCar = 1;
+                            }
                             dialog.dismiss();
                         }
                     });
@@ -198,6 +236,26 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
 
         }
     };
+
+    private View.OnClickListener click_to_noicar_type_listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setTitle("Chọn loại xe")
+                    .setSingleChoiceItems(aNoiCarType.toArray(new CharSequence[aNoiCarType.size()]),-1, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            noiCarType = which;
+                            txtNoicarType.setText(aNoiCarType.get(which));
+                            dialog.dismiss();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+
+        }
+    };
+
     private View.OnClickListener click_to_produce_year_listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -310,11 +368,23 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
             txtWarn.setText("Bạn chưa nhập năm sản xuất xe");
             return true;
         }
-        if (txtCarType.getText().toString().equals("")|| txtCarType.getText().toString() == null){
-            txtWarn.setVisibility(View.VISIBLE);
-            txtWarn.setText("Bạn chưa nhập loại xe");
-            return true;
+
+        if (layoutNoiCarType.getVisibility() == View.VISIBLE) {
+            if (txtNoicarType.getText().toString().equals("") || txtNoicarType.getText().toString() == null) {
+                txtWarn.setVisibility(View.VISIBLE);
+                txtWarn.setText("Bạn chưa nhập loại xe");
+                return true;
+            }
         }
+
+        if (layoutNoicarTaxi.getVisibility() == View.VISIBLE) {
+            if (txtNoicarTaxi.getText().toString().equals("") || txtNoicarTaxi.getText().toString() == null) {
+                txtWarn.setVisibility(View.VISIBLE);
+                txtWarn.setText("Bạn chưa nhập loại hình");
+                return true;
+            }
+        }
+
         if (edtCarNumber.getText().toString().equals("")|| edtCarNumber.getText().toString() == null){
             txtWarn.setVisibility(View.VISIBLE);
             txtWarn.setText("Bạn chưa nhập biển số xe");
@@ -346,7 +416,8 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
         params.put("car_model", txtCarModel.getText().toString());
         params.put("car_size", size);
         params.put("car_year", txtCarYear.getText().toString());
-        params.put("car_type", txtCarType.getText().toString());
+        params.put("driver_type", noiCarType);
+        params.put("is_car", isCar);
         params.put("car_number", edtCarNumber.getText().toString());
         params.put("card_identify", edtIdendify.getText().toString());
         params.put("license", edtLicense.getText().toString());
@@ -418,6 +489,14 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
         this.aCarType = aCarTypes;
         for (String item : aCarSize)
             this.aCarSize.add(item+" chỗ");
+        aNoiCarType = new ArrayList<>();
+        aNoiCarType.add("Xe đường dài");
+        aNoiCarType.add("Xe nội thành");
+        aNoiCarType.add("Tất cả");
+
+        aNoiCarTaxi = new ArrayList<>();
+        aNoiCarTaxi.add("Taxi");
+        aNoiCarTaxi.add("Xe tự do(noicar)");
     }
 
 }

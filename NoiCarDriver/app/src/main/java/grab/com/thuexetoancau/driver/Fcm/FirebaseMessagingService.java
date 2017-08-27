@@ -123,7 +123,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                         .setContentText("Có một cuốc mới dành cho bạn. Bấm vào đây để chấp nhận")
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                        .setVibrate(new long[] {1, 1, 1});
+                        .setVibrate(new long[] { 0, 100, 200, 300 });
                 Intent intent = new Intent(FirebaseMessagingService.this,ListBookingAroundActivity.class);
                 intent.putExtra(Defines.BUNDLE_FOUND_CUSTOMER,true);
                 intent.putExtra(Defines.BUNDLE_TRIP_BACKGROUND,trip);
@@ -151,7 +151,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                                 .setSmallIcon(R.mipmap.ic_launcher)
                                 .setContentIntent(pendingIntent)
                                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                .setVibrate(new long[] {1, 1, 1});
+                                .setVibrate(new long[] { 0, 100, 200, 300 });
                         NotificationManager managerCancel = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                         managerCancel.notify(Defines.NOTIFY_TAG,trip.getId(), notification.build());
                         return;

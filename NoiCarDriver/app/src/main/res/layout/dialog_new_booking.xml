@@ -116,4 +116,16 @@
         android:layout_margin="20dp"
         style="@style/button_white_title_normal"
         android:text="Nhận chuyến" />
+
+    <Button
+        android:id="@+id/btn_deny"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:textSize="14sp"
+        android:textAllCaps="false"
+        android:background="@drawable/border_form"
+
+        android:text="Từ chối" />
+
 </LinearLayout>
