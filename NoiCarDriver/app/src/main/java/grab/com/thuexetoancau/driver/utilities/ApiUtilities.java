@@ -627,7 +627,7 @@ public class ApiUtilities {
         }
         RequestParams params;
         params = new RequestParams();
-        params.put("user_id", userId);
+        params.put("driver_id", userId);
         Log.e("TAG",params.toString());
         BaseService.getHttpClient().post(Defines.URL_GET_HISTORY,params, new AsyncHttpResponseHandler() {
 

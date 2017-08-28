@@ -113,7 +113,11 @@
         android:id="@+id/btn_accept"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="5dp"
+        android:foreground="?android:selectableItemBackground"
         style="@style/button_white_title_normal"
         android:text="Nhận chuyến" />
 
@@ -121,11 +125,13 @@
         android:id="@+id/btn_deny"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="20dp"
         android:textSize="14sp"
         android:textAllCaps="false"
         android:background="@drawable/border_form"
-
         android:text="Từ chối" />
 
 </LinearLayout>

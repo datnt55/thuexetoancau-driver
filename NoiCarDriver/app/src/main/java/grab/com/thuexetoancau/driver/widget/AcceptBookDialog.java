@@ -116,6 +116,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
     }
 
     private void cancelTrip() {
+        Global.inTrip = false;
         mApi.driverNoReceiverTrip(trip.getId(), driverId, new ApiUtilities.CancelTripListener() {
             @Override
             public void onSuccess() {
@@ -149,7 +150,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
 
             @Override
             public void onFailure() {
-
+                AcceptBookDialog.this.dismissAllowingStateLoss();
             }
         });
     }

@@ -35,8 +35,7 @@ public class DriverLocation implements Runnable {
     public void run() {
         try {
             while (true) {
-                Log.e("TAG","loop");
-                if (Global.receiveTrip) {
+                if (!Global.receiveTrip) {
                     sendLocationToServer();
                 }
                 Thread.sleep(Global.LOOP_TIME);
