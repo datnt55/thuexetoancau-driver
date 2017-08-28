@@ -33,6 +33,7 @@ import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.CommonUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.Global;
+import grab.com.thuexetoancau.driver.utilities.SharePreference;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -89,6 +90,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
 
             public void onTick(long millisUntilFinished) {
                 progress.setProgress(30 - (int) millisUntilFinished/1000);
+                Log.e("percent",progress+"");
             }
 
             public void onFinish() {
@@ -138,7 +140,8 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
             @Override
             public void onSuccess(User user) {
                 AcceptBookDialog.this.dismissAllowingStateLoss();
-                Global.receiveTrip = true;
+                SharePreference preference = new SharePreference(getActivity());
+                preference.saveStatus(1);
                 Intent intent = new Intent(mContext, AcceptBookingActivity.class);
                 trip.setCustomerName(user.getName());
                 trip.setCustomerPhone(user.getPhone());

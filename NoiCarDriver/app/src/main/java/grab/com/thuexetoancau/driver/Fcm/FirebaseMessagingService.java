@@ -80,6 +80,14 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 if (!isAppInForeground(this))
                     cancelTrip();
             }
+        }else if (function.equals(Defines.FUNCTION_REVIEW)){
+            String receiveCase = remoteMessage.getData().get("case");
+            if (receiveCase.equals(Defines.CASE_SUCCESS)) {
+                String customerName = remoteMessage.getData().get("custom_name");
+                String star = remoteMessage.getData().get("custom_rating");
+                reviewTrip(customerName, star);
+
+            }
         }
     }
 
@@ -175,6 +183,24 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessagingService.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.notify(0,builder.build());
+    }
+
+    private void reviewTrip(String customerName, String star) {
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseMessagingService.this)
+                .setAutoCancel(true)
+                .setContentTitle("Thuê xe toàn cầu driver")
+                .setContentText("Hành khách " +customerName+ " đã đánh giá "+ star + " sao cho bạn")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setVibrate(new long[] {0, 100, 200, 300});
+        if (!isAppInForeground(this)) {
+            Intent intent = new Intent(FirebaseMessagingService.this, SplashActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessagingService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(pendingIntent);
+        }
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.notify(0,builder.build());
     }

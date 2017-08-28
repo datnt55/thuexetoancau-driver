@@ -89,7 +89,8 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accept_booking);
         mContext = this;
-        Global.receiveTrip = true;
+        SharePreference preference = new SharePreference(this);
+        preference.saveStatus(1);
         mApi = new ApiUtilities(this);
         if (getIntent().hasExtra(Defines.BUNDLE_TRIP)) {
             customerTrip = (Trip) getIntent().getSerializableExtra(Defines.BUNDLE_TRIP);
@@ -276,12 +277,12 @@ public class AcceptBookingActivity extends AppCompatActivity implements
             @Override
             public void onConfirm(String reason) {
                 ApiUtilities mApi = new ApiUtilities(mContext);
-                SharePreference preference = new SharePreference(mContext);
+                final SharePreference preference = new SharePreference(mContext);
                 mApi.driverCancelTrip(customerTrip.getId(), preference.getDriverId(), preference.getPhone(), reason, new ApiUtilities.CancelTripListener() {
                     @Override
                     public void onSuccess() {
                         Global.inTrip = false;
-                        Global.receiveTrip = false;
+                        preference.saveStatus(0);
                         Intent intent = new Intent(AcceptBookingActivity.this, ListBookingAroundActivity.class);
                         startActivity(intent);
                         finish();
@@ -354,7 +355,8 @@ public class AcceptBookingActivity extends AppCompatActivity implements
     @Override
     public void onFinishTrip() {
         Global.inTrip = false;
-        Global.receiveTrip = false;
+        SharePreference preference = new SharePreference(this);
+        preference.saveStatus(0);
         Intent intent = new Intent(AcceptBookingActivity.this, ListBookingAroundActivity.class);
         startActivity(intent);
         finish();

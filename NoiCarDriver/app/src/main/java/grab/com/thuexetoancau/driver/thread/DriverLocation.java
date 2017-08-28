@@ -35,7 +35,10 @@ public class DriverLocation implements Runnable {
     public void run() {
         try {
             while (true) {
-                if (!Global.receiveTrip) {
+                if (preference.getStatus()== 0){
+                    Global.isPostGPS = true;
+                }
+                if (Global.isPostGPS) {
                     sendLocationToServer();
                 }
                 Thread.sleep(Global.LOOP_TIME);
@@ -87,7 +90,10 @@ public class DriverLocation implements Runnable {
                 // called when response HTTP status is "200 OK"
                 Log.i("JSON", new String(responseBody));
                 //parseJsonResult(new String(responseBody));
-
+                if (preference.getStatus() == 0)
+                    Global.isPostGPS = true;
+                else
+                    Global.isPostGPS = false;
 
 
             }

@@ -73,6 +73,7 @@ public class Defines {
 
     // Notification
     public static final String FUNCTION_BOOK_GRAB = "bookingGrab";
+    public static final String FUNCTION_REVIEW = "reviewTrip";
     public static final String FUNCTION_RECEIVE_TRIP = "receivedTrip";
     public static final String FUNCTION_CANCEL_TRIP = "cancelTrip";
     public static final String CASE_FOUND_DRIVER = "founddriver";

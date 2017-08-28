@@ -177,8 +177,11 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
             txtName.setText(preference.getName());
             txtEmail.setText("");
         }
-        Thread t = new Thread(new DriverLocation(this));
-        t.start();
+        if (!Global.isStartThread) {
+            Thread t = new Thread(new DriverLocation(this));
+            t.start();
+            Global.isStartThread = true;
+        }
     }
 
     // Init 2 fragment
