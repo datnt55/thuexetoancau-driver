@@ -5,6 +5,7 @@ import android.os.CountDownTimer;
 import java.util.ArrayList;
 
 import grab.com.thuexetoancau.driver.model.Phone;
+import grab.com.thuexetoancau.driver.thread.DriverLocation;
 
 /**
  * Created by DatNT on 11/11/2016.
@@ -26,4 +27,5 @@ public class Global {
     public static boolean isStartThread                         = false;
     public static CountDownTimer countDownTimer;
     public static CountDownTimer count;
+    public static DriverLocation threadLocation = null;
 }

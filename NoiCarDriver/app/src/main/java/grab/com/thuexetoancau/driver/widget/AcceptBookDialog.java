@@ -191,7 +191,8 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
                 acceptTrip();
                 break;
             case R.id.btn_deny:
-                Global.count.cancel();
+                if (Global.count != null)
+                    Global.count.cancel();
                 Global.count = null;
                 cancelTrip();
                 break;

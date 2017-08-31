@@ -160,10 +160,12 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         if (gpsTracker.handlePermissionsAndGetLocation()) {
             if (!gpsTracker.canGetLocation()) {
                 DialogUtils.settingRequestTurnOnLocation(this);
-            } else
+            } else {
                 showCurrentLocationToMap(gpsTracker.getLatitude(), gpsTracker.getLongitude());
+            }
         }
     }
+
 
     private void showCurrentLocationToMap(double latitude, double longitude) {
         if (currentLocation != null)
@@ -178,6 +180,8 @@ public class AcceptBookingActivity extends AppCompatActivity implements
                 .tilt(45)                   // Sets the tilt of the camera to 0 degrees
                 .build();                   // Creates BookingLongTripAroundAdapter CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
+
+        Global.threadLocation.setMarker(currentLocation);
         sendRequestFindDirection();
     }
 

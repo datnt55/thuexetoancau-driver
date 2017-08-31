@@ -3,16 +3,21 @@ package grab.com.thuexetoancau.driver.Fcm;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.KeyguardManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
+import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -47,8 +52,13 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             String functionCase = remoteMessage.getData().get("case");
             if (functionCase.equals(Defines.CASE_FOUND_DRIVER)){
                 Trip trip = handleFoundDriver(remoteMessage.getData());
+
                 if (!isAppInForeground(this))
                     responseForPassenger(trip);
+                else {
+                    if (!isScreenOn())
+                        responseForPassenger(trip);
+                }
                 final Intent intent = new Intent(Defines.BROADCAST_FOUND_CUSTOMER);
                 // You can also include some extra data.
                 final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
@@ -79,6 +89,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 broadcastManager.sendBroadcast(intent);
                 if (!isAppInForeground(this))
                     cancelTrip();
+                else {
+                    if (!isScreenOn())
+                        cancelTrip();
+                }
             }
         }else if (function.equals(Defines.FUNCTION_REVIEW)){
             String receiveCase = remoteMessage.getData().get("case");
@@ -122,6 +136,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     }
 
     private void responseForPassenger(final Trip trip) {
+        turnOnScreen();
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -130,8 +145,9 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                         .setContentTitle("Thuê xe toàn cầu driver")
                         .setContentText("Có một cuốc mới dành cho bạn. Bấm vào đây để chấp nhận")
                         .setSmallIcon(R.mipmap.ic_launcher)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                        .setVibrate(new long[] { 0, 100, 200, 300 });
+                        .setVibrate(new long[] {500,200,200,500});
                 Intent intent = new Intent(FirebaseMessagingService.this,ListBookingAroundActivity.class);
                 intent.putExtra(Defines.BUNDLE_FOUND_CUSTOMER,true);
                 intent.putExtra(Defines.BUNDLE_TRIP_BACKGROUND,trip);
@@ -139,7 +155,11 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessagingService.this,0,intent,PendingIntent.FLAG_CANCEL_CURRENT);
                 builder.setContentIntent(pendingIntent);
                 NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                manager.notify(Defines.NOTIFY_TAG,trip.getId(), builder.build());
+                Notification notification = builder.build();
+                notification.defaults |= Notification.DEFAULT_VIBRATE;
+                notification.defaults |= Notification.DEFAULT_SOUND;
+
+                manager.notify(Defines.NOTIFY_TAG,trip.getId(),notification);
 
                 Global.countDownTimer = new CountDownTimer(30000, 1000) {
 
@@ -172,6 +192,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     }
 
     private void cancelTrip() {
+        turnOnScreen();
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseMessagingService.this)
                 .setAutoCancel(true)
                 .setContentTitle("Thuê xe toàn cầu driver")
@@ -188,6 +209,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     }
 
     private void reviewTrip(String customerName, String star) {
+        turnOnScreen();
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseMessagingService.this)
                 .setAutoCancel(true)
                 .setContentTitle("Thuê xe toàn cầu driver")
@@ -228,5 +250,27 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             // App is foreground, but screen is locked, so show notification
             return km.inKeyguardRestrictedInputMode();
         }
+    }
+
+    private boolean isScreenOn(){
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        boolean isScreenOn = pm.isScreenOn();
+        if (!isScreenOn)
+            return false;
+        return true;
+    }
+
+    private void turnOnScreen(){
+        //Turn on screen
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        boolean isScreenOn = pm.isScreenOn();
+        if (isScreenOn == false) {
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyLock");
+            wl.acquire(10000);
+            PowerManager.WakeLock wl_cpu = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyCpuLock");
+            wl_cpu.acquire(10000);
+
+        }
+
     }
 }

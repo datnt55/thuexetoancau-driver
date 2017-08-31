@@ -2,9 +2,11 @@ package grab.com.thuexetoancau.driver.thread;
 
 import android.app.Activity;
 import android.content.Context;
+import android.location.Location;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -15,6 +17,7 @@ import grab.com.thuexetoancau.driver.utilities.CommonUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.GPSTracker;
 import grab.com.thuexetoancau.driver.utilities.Global;
+import grab.com.thuexetoancau.driver.utilities.MarkerAnimation;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
 
 /**
@@ -27,9 +30,14 @@ public class DriverLocation implements Runnable {
     private SharePreference preference;
     private Activity mActivity;
     private LatLng prevLatLn;
+    private Marker mMarker;
     public DriverLocation(Activity activity) {
         this.mActivity = activity;
         preference = new SharePreference(mActivity);
+    }
+
+    public void setMarker (Marker marker){
+        this.mMarker = marker;
     }
 
     public void run() {
@@ -58,15 +66,17 @@ public class DriverLocation implements Runnable {
                 if (gps.canGetLocation()) {
                     longtitude = gps.getLongitude();
                     latitude = gps.getLatitude();
+                    if (Global.inTrip) {
+                        if (prevLatLn != null)
+                            Global.totalDistance += CommonUtilities.distanceInMeter(prevLatLn, new LatLng(latitude, longtitude));
+                        MarkerAnimation.animateMarker(gps.getLocation(),mMarker);
+                    }
                 }else
                     return;
             }
         });
 
-        if (Global.inTrip) {
-            if (prevLatLn != null)
-                Global.totalDistance += CommonUtilities.distanceInMeter(prevLatLn, new LatLng(latitude, longtitude));
-        }
+
         prevLatLn = new LatLng(latitude, longtitude);
         params.put("car_number", preference.getCarNumber());
         params.put("lat", latitude);
