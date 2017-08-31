@@ -49,6 +49,7 @@ import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.model.Position;
 import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.model.User;
+import grab.com.thuexetoancau.driver.thread.DriverLocation;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.CommonUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
@@ -109,6 +110,12 @@ public class AcceptBookingActivity extends AppCompatActivity implements
             SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             map.getMapAsync(this);
             initComponents();
+        }
+        if (!Global.isStartThread) {
+            Global.threadLocation = new DriverLocation(this);
+            Thread t  = new Thread(Global.threadLocation);
+            t.start();
+            Global.isStartThread = true;
         }
     }
 

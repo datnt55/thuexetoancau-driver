@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -46,9 +47,7 @@ public class DriverLocation implements Runnable {
                 if (preference.getStatus()== 0){
                     Global.isPostGPS = true;
                 }
-                if (Global.isPostGPS) {
-                    sendLocationToServer();
-                }
+                sendLocationToServer();
                 Thread.sleep(Global.LOOP_TIME);
             }
         } catch (InterruptedException e) {
@@ -70,6 +69,7 @@ public class DriverLocation implements Runnable {
                         if (prevLatLn != null)
                             Global.totalDistance += CommonUtilities.distanceInMeter(prevLatLn, new LatLng(latitude, longtitude));
                         MarkerAnimation.animateMarker(gps.getLocation(),mMarker);
+                        Toast.makeText(mActivity, Global.totalDistance+"",Toast.LENGTH_SHORT).show();
                     }
                 }else
                     return;
