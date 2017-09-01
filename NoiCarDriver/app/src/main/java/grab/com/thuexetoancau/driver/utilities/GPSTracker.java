@@ -40,7 +40,7 @@ public class GPSTracker extends Service implements LocationListener {
 	private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 
 	// The minimum time between updates in milliseconds
-	private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+	private static final long MIN_TIME_BW_UPDATES = 1000; // 1 minute
 
 	private static final float LONGITUDE_TO_KILOMETER_AT_ZERO_LATITUDE = 111.320f;
 	private static final float KILOMETER_TO_METER = 1000.0f;
