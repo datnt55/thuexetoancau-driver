@@ -68,8 +68,8 @@ public class DriverLocation implements Runnable {
                     if (Global.inTrip) {
                         if (prevLatLn != null)
                             Global.totalDistance += CommonUtilities.distanceInMeter(prevLatLn, new LatLng(latitude, longtitude));
-                        MarkerAnimation.animateMarker(gps.getLocation(),mMarker);
-                        Toast.makeText(mActivity, Global.totalDistance+"",Toast.LENGTH_SHORT).show();
+                       /* MarkerAnimation.animateMarker(gps.getLocation(),mMarker);
+                        Toast.makeText(mActivity, Global.totalDistance+"",Toast.LENGTH_SHORT).show();*/
                     }
                 }else
                     return;

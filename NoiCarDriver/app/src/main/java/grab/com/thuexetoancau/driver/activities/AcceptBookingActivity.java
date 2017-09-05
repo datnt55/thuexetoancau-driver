@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -50,12 +51,14 @@ import grab.com.thuexetoancau.driver.model.Position;
 import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.thread.DriverLocation;
+import grab.com.thuexetoancau.driver.thread.LocationProvide;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.CommonUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.DialogUtils;
 import grab.com.thuexetoancau.driver.utilities.GPSTracker;
 import grab.com.thuexetoancau.driver.utilities.Global;
+import grab.com.thuexetoancau.driver.utilities.MarkerAnimation;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
 import grab.com.thuexetoancau.driver.widget.AcceptBookDialog;
 import grab.com.thuexetoancau.driver.widget.CustomerInfoLayout;
@@ -68,6 +71,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         View.OnClickListener,
         PaymentDialog.BillSuccessListenr,
         DirectionFinderListener,
+LocationProvide.OnUpdateLocation,
         OnMapReadyCallback{
 
     private GoogleMap mMap;
@@ -84,7 +88,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
     private ApiUtilities mApi;
     private Button btnFinishTrip;
     private User user;
-
+    private LocationProvide locationProvide;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +121,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
             t.start();
             Global.isStartThread = true;
         }
+        locationProvide = new LocationProvide(this,this);
     }
 
     private void initComponents(){
@@ -314,6 +319,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         btnFinishTrip.setVisibility(View.VISIBLE);
         navigation.setVisibility(View.GONE);
         btnFinishTrip.setOnClickListener(this);
+        locationProvide.startUpdatesButtonHandler();
     }
 
     public void showCurrentLocation(View v){
@@ -365,11 +371,24 @@ public class AcceptBookingActivity extends AppCompatActivity implements
 
     @Override
     public void onFinishTrip() {
+        locationProvide.stopLocationUpdates();
         Global.inTrip = false;
         SharePreference preference = new SharePreference(this);
         preference.saveStatus(0);
         Intent intent = new Intent(AcceptBookingActivity.this, ListBookingAroundActivity.class);
         startActivity(intent);
         finish();
+    }
+
+
+
+    @Override
+    public void onStopUpdate() {
+
+    }
+
+    @Override
+    public void onUpdate(Location mCurrentLocation) {
+        MarkerAnimation.animateMarker(mCurrentLocation,currentLocation);
     }
 }
