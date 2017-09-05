@@ -389,6 +389,6 @@ LocationProvide.OnUpdateLocation,
 
     @Override
     public void onUpdate(Location mCurrentLocation) {
-        MarkerAnimation.animateMarker(mCurrentLocation,currentLocation);
+       // MarkerAnimation.animateMarker(mCurrentLocation,currentLocation);
     }
 }
