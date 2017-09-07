@@ -122,7 +122,20 @@ public class SplashActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Defines.REQUEST_LOCATION_ENABLE){
-            initComponents();
+            GPSTracker gpsTracker = new GPSTracker(this);
+            if (gpsTracker.canGetLocation()) {
+                if (gpsTracker.getLongitude() == 0 && gpsTracker.getLatitude() == 0) {
+                    gpsTracker.getLocationCoodinate(new GPSTracker.LocateListener() {
+                        @Override
+                        public void onLocate(double mlongitude, double mlatitude) {
+                            initComponents();
+                        }
+                    });
+                } else {
+                    initComponents();
+                }
+            }else
+                initComponents();
         }
     }
 

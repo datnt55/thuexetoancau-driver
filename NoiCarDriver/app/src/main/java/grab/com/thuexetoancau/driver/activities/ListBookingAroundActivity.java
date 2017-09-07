@@ -27,6 +27,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.adapter.ViewPagerAdapter;
 import grab.com.thuexetoancau.driver.fragment.ImmediatelyBookFragment;
@@ -35,8 +38,10 @@ import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.thread.DriverLocation;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
+import grab.com.thuexetoancau.driver.utilities.BaseService;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.DialogUtils;
+import grab.com.thuexetoancau.driver.utilities.GPSTracker;
 import grab.com.thuexetoancau.driver.utilities.Global;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
 import grab.com.thuexetoancau.driver.widget.AcceptBookDialog;
@@ -303,16 +308,55 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
                 preference.saveStatus(1);
                 item.setIcon(ContextCompat.getDrawable(mContext, R.drawable.item_offline));
                 item.setTitle(getString(R.string.offline));
+                sendStatus(1);
             } else {
                 preference.saveStatus(0);
                 item.setIcon(ContextCompat.getDrawable(mContext, R.drawable.item_online));
                 item.setTitle(getString(R.string.online));
+                sendStatus(0);
             }
             if (listener != null)
                 listener.onRefresh();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sendStatus( int status) {
+        RequestParams params;
+        params = new RequestParams();
+        GPSTracker gps = new GPSTracker(this);
+        params.put("car_number", preference.getCarNumber());
+        params.put("lat", gps.getLatitude());
+        params.put("lon", gps.getLongitude());
+        params.put("status", status);
+        params.put("phone", preference.getPhone());
+        params.put("car_type", 1);
+        params.put("os", 1);
+        params.put("reg_id", preference.getRegId());
+        params.put("driver_id", preference.getDriverId());
+        Log.i("params deleteDelivery", params.toString());
+        BaseService.getHttpClient().post(Defines.URL_POST_DRIVER_GPS, params, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+                Log.i("JSON", "error");
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+            }
+        });
     }
 
 

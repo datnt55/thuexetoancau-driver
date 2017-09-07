@@ -100,9 +100,11 @@ public class LoginActivity extends AppCompatActivity {
                     intent = new Intent(mContext, AcceptBookingActivity.class);
                     intent.putExtra(Defines.BUNDLE_USER, user);
                     intent.putExtra(Defines.BUNDLE_TRIP, trip);
+                    preference.saveStatus(1);
                 }else {
                     intent = new Intent(mContext, ListBookingAroundActivity.class);
                     intent.putExtra(Defines.BUNDLE_USER, user);
+                    preference.saveStatus(0);
                 }
                 startActivity(intent);
                 finish();

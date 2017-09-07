@@ -442,6 +442,7 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
                 Log.i("JSON", new String(responseBody));
                 int id = Integer.valueOf(new String(responseBody));
                 if (id > 0){
+                    preference.saveStatus(0);
                     preference.saveDriverId(id);
                     preference.savePhone(edtPhone.getText().toString());
                     preference.saveName(edtName.getText().toString());
