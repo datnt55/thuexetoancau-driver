@@ -9,8 +9,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import grab.com.thuexetoancau.driver.R;
+import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
 import grab.com.thuexetoancau.driver.utilities.BaseService;
@@ -36,8 +39,8 @@ import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.GetAllRegisterCarData;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
 
-public class RegisterActivity extends AppCompatActivity implements GetAllRegisterCarData.onDataReceived {
-    private EditText edtName, edtPhone, edtPass, edtIdendify, edtLicense, edtCarNumber;
+public class ConfigureAccountActivity extends AppCompatActivity implements GetAllRegisterCarData.onDataReceived {
+    private EditText edtName, edtPhone, edtPass, edtIdendify, edtLicense, edtCarNumber, edtPassNew;
     private EditText txtCarMade, txtCarSize, txtCarYear, txtCarType, txtNoicarType, txtNoicarTaxi;
     private TextView txtWarn;
     private TextView txtCarModel;
@@ -50,15 +53,21 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
     private int noiCarType = 0, isCar = 1;
     private LinearLayout layoutNoiCarType, layoutNoicarTaxi;
     private ApiUtilities mApi;
+    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_configure_account);
         mContext = this;
         mApi = new ApiUtilities(this);
         preference = new SharePreference(this);
         GetAllRegisterCarData data = new GetAllRegisterCarData(this);
         data.getAllCarData(this);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Sửa thông tin tài khoản");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         initComponents();
 
     }
@@ -66,6 +75,7 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
         edtName     = (EditText)    findViewById(R.id.edt_name);
         edtPhone    = (EditText)    findViewById(R.id.edt_phone);
         edtPass     = (EditText)    findViewById(R.id.edt_pass);
+        edtPassNew  = (EditText)    findViewById(R.id.edt_pass_new);
         edtIdendify = (EditText)    findViewById(R.id.edt_identify);
         edtLicense  = (EditText)    findViewById(R.id.edt_license);
         edtCarNumber= (EditText)    findViewById(R.id.edt_car_number);
@@ -92,13 +102,60 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
         txtCarSize.setOnClickListener(click_to_car_size_listener);
         txtNoicarType.setOnClickListener(click_to_noicar_type_listener);
         txtCarModel.setOnClickListener(click_to_car_model_listener);
+        final ProgressDialog dialog = new ProgressDialog(mContext);
+        dialog.setMessage("Đang tải dữ liệu");
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.show();
+        mApi.login(preference.getPhone(), preference.getPassword(), dialog, new ApiUtilities.LoginResponseListener() {
+            @Override
+            public void onSuccess(User user, Trip trip) {
+                noiCarType = user.getDriverType();
+                isCar = user.getIsCar();
+                size = String.valueOf(user.getCarSize());
+                edtName.setText(user.getName());
+                edtPhone.setText(user.getPhone());
+                txtCarMade.setText(user.getCarMade());
+                txtCarModel.setText(user.getCarModel());
+                txtCarSize.setText(user.getCarSize() +" chỗ");
+                if (user.getCarSize() != 5 && user.getCarSize() != 8){
+                    layoutNoiCarType.setVisibility(View.GONE);
+                    layoutNoicarTaxi.setVisibility(View.GONE);
+                }else {
+                    layoutNoiCarType.setVisibility(View.VISIBLE);
+                    layoutNoicarTaxi.setVisibility(View.VISIBLE);
+                    switch (user.getDriverType()){
+                        case 0:
+                            txtNoicarType.setText("Xe đường dài");
+                            break;
+                        case 1:
+                            txtNoicarType.setText("Xe nội thành");
+                            break;
+                        case 2:
+                            txtNoicarType.setText("Tất cả");
+                            break;
+                    }
+                    switch (user.getIsCar()){
+                        case 0:
+                            txtNoicarTaxi.setText("Taxi");
+                            break;
+                        case 1:
+                            txtNoicarTaxi.setText("Xe tự do(noicar)");
+                            break;
+
+                    }
+                }
+                txtCarYear.setText(user.getCarYear());
+                edtCarNumber.setText(user.getCarNumber());
+                edtIdendify.setText(user.getIdentity());
+                edtLicense.setText(user.getLicense());
+            }
+        });
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            Intent intent = new Intent(mContext, LoginActivity.class);
-            startActivity(intent);
             finish();
             return true;
         }
@@ -348,6 +405,13 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
             txtWarn.setText("Bạn chưa nhập mật khẩu");
             return true;
         }
+
+        if (edtPassNew.getText().toString().equals("")|| edtPassNew.getText().toString() == null){
+            txtWarn.setVisibility(View.VISIBLE);
+            txtWarn.setText("Bạn chưa nhập mật khẩu mới");
+            return true;
+        }
+
         if (txtCarMade.getText().toString().equals("")|| txtCarMade.getText().toString() == null){
             txtWarn.setVisibility(View.VISIBLE);
             txtWarn.setText("Bạn chưa nhập hãng xe");
@@ -402,16 +466,21 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
             return true;
         }
 
+        if (!edtPass.getText().toString().equals(preference.getPassword())){
+            txtWarn.setVisibility(View.VISIBLE);
+            txtWarn.setText("Bạn đã nhập sai mật khẩu");
+            return true;
+        }
         return false;
     }
 
     private void requestRegisterDriver() {
         RequestParams params;
         params = new RequestParams();
-        params.put("id", "");
+        params.put("id", preference.getDriverId());
         params.put("name", edtName.getText().toString());
         params.put("phone", edtPhone.getText().toString());
-        params.put("pass", edtPass.getText().toString());
+        params.put("pass", edtPassNew.getText().toString());
         params.put("car_made", txtCarMade.getText().toString());
         params.put("car_model", txtCarModel.getText().toString());
         params.put("car_size", size);
@@ -442,13 +511,10 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
                 Log.i("JSON", new String(responseBody));
                 int id = Integer.valueOf(new String(responseBody));
                 if (id > 0){
-                    preference.saveStatus(0);
-                    preference.saveDriverId(id);
                     preference.savePhone(edtPhone.getText().toString());
                     preference.saveName(edtName.getText().toString());
                     preference.saveCarNumber(edtCarNumber.getText().toString());
-                    preference.savePassword(edtPass.getText().toString());
-                    Intent intent = new Intent(mContext, ListBookingAroundActivity.class);
+                    preference.savePassword(edtPassNew.getText().toString());
                     String name =  edtName.getText().toString();
                     String phone =  edtPhone.getText().toString();
                     String carMade =  txtCarMade.getText().toString();
@@ -458,10 +524,12 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
                     String carNumber =  edtCarNumber.getText().toString();
                     String identity =  edtIdendify.getText().toString();
                     String license =  edtLicense.getText().toString();
-                    User user = new User(name,phone,"",carModel,carMade,carYear,Integer.valueOf(size),carNumber,carType,0,0,"",identity,license, noiCarType, isCar);
-                    intent.putExtra(Defines.BUNDLE_USER, user);
-                    startActivity(intent);
+                    User user = new User(name,phone,"",carModel,carMade,carYear,Integer.valueOf(size),carNumber,carType,0,0,"",identity,license,noiCarType, isCar);
+                    Intent returnIntent = getIntent();
+                    returnIntent.putExtra(Defines.BUNDLE_USER,user);
+                    setResult(RESULT_OK,returnIntent);
                     finish();
+                    Toast.makeText(mContext, "Cập nhật tài khoản thành công", Toast.LENGTH_SHORT).show();
 
                 }
                 dialog.dismiss();
@@ -499,5 +567,13 @@ public class RegisterActivity extends AppCompatActivity implements GetAllRegiste
         aNoiCarTaxi.add("Taxi");
         aNoiCarTaxi.add("Xe tự do(noicar)");
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
 
+        return super.onOptionsItemSelected(item);
+    }
 }

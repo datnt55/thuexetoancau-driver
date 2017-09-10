@@ -68,7 +68,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
 
             }
-        }/*else if (function.equals(Defines.FUNCTION_RECEIVE_TRIP)){
+        }else if (function.equals(Defines.FUNCTION_RECEIVE_TRIP)){
             String receiveCase = remoteMessage.getData().get("case");
             if (receiveCase.equals(Defines.CASE_CANCEL_TRIP)) {
                 String bookingId = remoteMessage.getData().get("id_booking");
@@ -79,7 +79,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 if (!isAppInForeground(this))
                     cancelTrip();
             }
-        }*/else if (function.equals(Defines.FUNCTION_CANCEL_TRIP)){
+        }else if (function.equals(Defines.FUNCTION_CANCEL_TRIP)){
             String receiveCase = remoteMessage.getData().get("case");
             if (receiveCase.equals(Defines.CASE_SUCCESS)) {
                 String bookingId = remoteMessage.getData().get("id_booking");

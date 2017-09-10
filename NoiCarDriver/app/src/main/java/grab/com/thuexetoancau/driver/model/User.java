@@ -23,8 +23,10 @@ public class User implements Serializable{
     private String province;
     private String identity;
     private String license;
+    private int driverType;
+    private int isCar;
 
-    public User(String name, String phone, String email, String carModel, String carMade, String carYear, int carSize, String carNumber, String carType, long carPrice, long totalMoney, String province, String identity, String license) {
+    public User(String name, String phone, String email, String carModel, String carMade, String carYear, int carSize, String carNumber, String carType, long carPrice, long totalMoney, String province, String identity, String license, int driverType, int isCar) {
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -39,6 +41,8 @@ public class User implements Serializable{
         this.province = province;
         this.identity = identity;
         this.license = license;
+        this.driverType = driverType;
+        this.isCar = isCar;
     }
 
     public User(int id, String name, String phone, String email, String url) {
@@ -89,5 +93,107 @@ public class User implements Serializable{
         this.url = url;
     }
 
+    public String getCarModel() {
+        return carModel;
+    }
 
+    public void setCarModel(String carModel) {
+        this.carModel = carModel;
+    }
+
+    public String getCarMade() {
+        return carMade;
+    }
+
+    public void setCarMade(String carMade) {
+        this.carMade = carMade;
+    }
+
+    public String getCarYear() {
+        return carYear;
+    }
+
+    public void setCarYear(String carYear) {
+        this.carYear = carYear;
+    }
+
+    public int getCarSize() {
+        return carSize;
+    }
+
+    public void setCarSize(int carSize) {
+        this.carSize = carSize;
+    }
+
+    public String getCarNumber() {
+        return carNumber;
+    }
+
+    public void setCarNumber(String carNumber) {
+        this.carNumber = carNumber;
+    }
+
+    public String getCarType() {
+        return carType;
+    }
+
+    public void setCarType(String carType) {
+        this.carType = carType;
+    }
+
+    public long getCarPrice() {
+        return carPrice;
+    }
+
+    public void setCarPrice(long carPrice) {
+        this.carPrice = carPrice;
+    }
+
+    public long getTotalMoney() {
+        return totalMoney;
+    }
+
+    public void setTotalMoney(long totalMoney) {
+        this.totalMoney = totalMoney;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
+    }
+
+    public String getLicense() {
+        return license;
+    }
+
+    public void setLicense(String license) {
+        this.license = license;
+    }
+
+    public int getDriverType() {
+        return driverType;
+    }
+
+    public void setDriverType(int driverType) {
+        this.driverType = driverType;
+    }
+
+    public int getIsCar() {
+        return isCar;
+    }
+
+    public void setIsCar(int isCar) {
+        this.isCar = isCar;
+    }
 }

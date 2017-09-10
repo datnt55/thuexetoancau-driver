@@ -127,7 +127,11 @@ public class ApiUtilities {
             String province = result.getString("province");
             String cardIdentify = result.getString("card_identify");
             String license = result.getString("license");
-            user = new User(name, phone, email, carModel, carMade, carYears, carSize, carNumber, carType, carPrice, totalMoneys, province, cardIdentify, license);
+            int driverType = 0;
+            if (!result.getString("driver_type").equals("null"))
+                driverType = result.getInt("driver_type");
+            int isCar = result.getInt("is_car");
+            user = new User(name, phone, email, carModel, carMade, carYears, carSize, carNumber, carType, carPrice, totalMoneys, province, cardIdentify, license, driverType,isCar);
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

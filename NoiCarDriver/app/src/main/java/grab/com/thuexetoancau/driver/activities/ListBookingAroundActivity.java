@@ -23,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private TextView txtName, txtEmail;
     /*private int[] tabIcons = {
             R.drawable.ic_close_black_24dp,
             R.drawable.car_connected
@@ -166,8 +168,8 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        TextView txtName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.txt_name);
-        TextView txtEmail = (TextView) navigationView.getHeaderView(0).findViewById(R.id.txt_email);
+        txtName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.txt_name);
+        txtEmail = (TextView) navigationView.getHeaderView(0).findViewById(R.id.txt_email);
         ImageView imgEdit = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.img_edit);
         ImageView imgAvatar = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.avatar);
         imgAvatar.setImageResource(R.drawable.driver);
@@ -188,6 +190,13 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
             t.start();
             Global.isStartThread = true;
         }
+        imgEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext,ConfigureAccountActivity.class);
+                startActivityForResult(intent, Defines.CONFIGURE_CODE);
+            }
+        });
     }
 
     // Init 2 fragment
@@ -322,6 +331,26 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case Defines.CONFIGURE_CODE:
+                if (resultCode == RESULT_OK) {
+                    // get String data from Intent
+                    User user = (User) data.getSerializableExtra(Defines.BUNDLE_USER);
+                    this.user = user;
+                    if (!user.getEmail().equals("null"))
+                        txtEmail.setText(user.getEmail());
+                    else
+                        txtEmail.setText("");
+                    txtName.setText(user.getName());
+                }else
+                    return;
+                break;
+        }
+    }
+
     private void sendStatus( int status) {
         RequestParams params;
         params = new RequestParams();
@@ -359,7 +388,11 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         });
     }
 
+    public void goToMapListener(View view){
+        Intent intent = new Intent(mContext, DriverMapActivity.class);
+        startActivity(intent);
 
+    }
     public interface ChangeStateListener {
         void onRefresh();
     }
