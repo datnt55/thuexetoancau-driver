@@ -9,6 +9,12 @@
         android:id="@+id/nav_history"
         android:icon="@drawable/ic_history_black_24dp"
         android:title="Lịch sử" />
+
+    <item
+        android:id="@+id/nav_wallet"
+        android:icon="@drawable/ic_attach_money_black_24dp"
+        android:title="Ví tiền" />
+
     <item
         android:id="@+id/nav_log_out"
         android:icon="@drawable/ic_exit_to_app_black_24dp"

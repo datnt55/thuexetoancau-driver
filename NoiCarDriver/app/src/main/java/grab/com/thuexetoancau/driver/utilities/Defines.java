@@ -22,7 +22,8 @@ public class Defines {
     public static  final String URL_GET_CAR_TYPE            = HOSTNAME + "api/getListCarType";
     public static  final String URL_GET_CAR_MADE            = HOSTNAME + "api/getCarMadeList";
     public static  final String URL_GET_CAR_MODEL           = HOSTNAME + "api/getCarModelListFromMade";
-    public static  final String URL_GET_HISTORY            = HOSTNAME + "api2/getHistoryTripForDriver";
+    public static  final String URL_GET_HISTORY             = HOSTNAME + "api2/getHistoryTripForDriver";
+    public static  final String URL_GET_MONEY               = HOSTNAME + "api2/getMoneyForDriver";
     public static  final String URL_BOOKING_LOG             = HOSTNAME + "api/bookingLog";
     public static  final String URL_GET_CAR_SIZE            = HOSTNAME + "api/getCarSize";
     public static  final String URL_GET_CAR_HIRE_TYPE       = HOSTNAME + "api/getCarHireType";
@@ -31,7 +32,7 @@ public class Defines {
     public static  final String URL_GET_BOOKING_CUSTOMER    = HOSTNAME + "api/getBookingForCustomer";
     public static  final String URL_GET_LIST_BOOKING_LOG    = HOSTNAME + "api/getlistbookinglog";
     public static  final String URL_GET_DRIVER_BY_ID        = HOSTNAME + "api/getDriverById";
-    public static  final String URL_GET_MONEY_DRIVER        = HOSTNAME + "api/getMoneyDriver";
+    public static  final String URL_GET_MONEY_DRIVER        = HOSTNAME + "api2/getMoneyForDriver";
     public static  final String URL_CONFIRM                 = HOSTNAME + "api/confirm";
     public static  final String URL_WHO_WIN                 = HOSTNAME + "api/whoWin";
 

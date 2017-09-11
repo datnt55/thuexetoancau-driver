@@ -144,6 +144,20 @@ public class CommonUtilities {
 
         return moneyString;
     }
+
+    public static String convertRealCurrency(int currency){
+        NumberFormat formatter = NumberFormat.getInstance();
+        String moneyString = formatter.format(currency);
+        if (moneyString.endsWith(".00")) {
+            int centsIndex = moneyString.lastIndexOf(".00");
+            if (centsIndex != -1) {
+                moneyString = moneyString.substring(0, centsIndex);
+            }
+        }
+
+        return moneyString;
+    }
+
     public static final String md5(final String s) {
         final String MD5 = "MD5";
         try {

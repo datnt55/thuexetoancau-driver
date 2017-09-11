@@ -26,7 +26,7 @@
         <TextView
             android:id="@+id/textView3"
             android:layout_width="0dp"
-            android:layout_weight="1.5"
+            android:layout_weight="1.75"
             android:textColor="@color/black_light"
             android:textSize="16sp"
             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
 
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="1.5"
+            android:layout_weight="1.75"
             android:textColor="@color/black_light"
             android:textSize="16sp"
             android:layout_height="wrap_content"
@@ -66,10 +66,35 @@
             android:layout_height="wrap_content"
             android:text="TextView" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1.75"
+            android:textColor="@color/black_light"
+            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:text="Số tiền trong ví" />
+
+        <TextView
+            android:id="@+id/txt_money"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/black_light"
+            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+    </LinearLayout>
     <Button
         android:id="@+id/btn_end_trip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         style="@style/button_white_title_normal"
         android:text="Kết thúc chuyến đi" />
 </LinearLayout>

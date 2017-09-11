@@ -511,6 +511,58 @@ public class ApiUtilities {
         });
     }
 
+    public void getDriverMoney(int driverId,final DriverMoneyListener listener) {
+        final ProgressDialog dialog = new ProgressDialog(mContext);
+        dialog.setMessage("Đang tải dữ liệu");
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.show();
+        RequestParams params;
+        params = new RequestParams();
+        params.put("driver_id", driverId);
+//        DateTime current = new DateTime();
+//        long key = (current.getMillis() + Global.serverTimeDiff) * 13 + 27;
+//        params.put("key", key);
+        Log.e("params deleteDelivery", params.toString());
+        BaseService.getHttpClient().post(Defines.URL_GET_MONEY_DRIVER, params, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+                // called when response HTTP status is "200 OK"
+                Log.i("JSON", new String(responseBody));
+                try {
+                    JSONObject json = new JSONObject(new String(responseBody));
+                    if (json.getString("status").equals("success")) {
+                        JSONArray array = json.getJSONArray("data");
+                        JSONObject data = array.getJSONObject(0);
+                        long money = data.getLong("total_money");
+                        if (listener != null)
+                            listener.onSuccess(money);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+                dialog.dismiss();
+            }
+        });
+    }
+
     public void getTripInfo(int bookingId, final TripInformationListener listener) {
         final ProgressDialog dialog = new ProgressDialog(mContext);
         dialog.setMessage("Đang tải dữ liệu");
@@ -715,6 +767,10 @@ public class ApiUtilities {
 
     public interface ConfirmTripListener {
         void onSuccess(long price, long distance, String dateTime);
+    }
+
+    public interface DriverMoneyListener {
+        void onSuccess(long price);
     }
 
 }

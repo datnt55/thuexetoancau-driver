@@ -279,6 +279,11 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
                 Intent schedule = new Intent(mContext, ScheduleTripActivity.class);
                 startActivity(schedule);
                 break;
+
+            case R.id.nav_wallet:
+                Intent wallet = new Intent(mContext, DriverWalletActivity.class);
+                startActivity(wallet);
+                break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
