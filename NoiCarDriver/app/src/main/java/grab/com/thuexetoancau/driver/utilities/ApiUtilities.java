@@ -34,6 +34,10 @@ public class ApiUtilities {
     }
 
     public void login(final String phone, final String pass, final ProgressDialog dialog, final LoginResponseListener listener) {
+        if (!CommonUtilities.isOnline(mContext)) {
+            DialogUtils.showDialogNetworkError(mContext, null);
+            return ;
+        }
         RequestParams params;
         params = new RequestParams();
         params.put("phone", phone);
