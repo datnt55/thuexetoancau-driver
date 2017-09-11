@@ -62,6 +62,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
     private int bookingId;
     private AcceptBookDialog dialog;
     private ChangeStateListener listener;
+    private ChangeStateListenerLongRoad listenerLongRoad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,6 +151,8 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         notificationManager.cancel(Defines.NOTIFY_TAG, bookingId);
         if (listener != null)
             listener.onRefresh();
+        if (listenerLongRoad != null)
+            listenerLongRoad.onRefresh();
     }
 
     private void initComponents() {
@@ -235,6 +238,10 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
 
     public void changeStateListener(ChangeStateListener listener) {
         this.listener = listener;
+    }
+
+    public void changeStateListenerLongRoad(ChangeStateListenerLongRoad listener) {
+        this.listenerLongRoad = listener;
     }
 
     @Override
@@ -331,6 +338,8 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
             }
             if (listener != null)
                 listener.onRefresh();
+            if (listenerLongRoad != null)
+                listenerLongRoad.onRefresh();
         }
 
         return super.onOptionsItemSelected(item);
@@ -398,6 +407,10 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
         startActivity(intent);
 
     }
+    public interface ChangeStateListenerLongRoad {
+        void onRefresh();
+    }
+
     public interface ChangeStateListener {
         void onRefresh();
     }

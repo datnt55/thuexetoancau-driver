@@ -1,5 +1,6 @@
 package grab.com.thuexetoancau.driver.activities;
 
+import android.content.Intent;
 import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.thread.LocationProvide;
+import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.DialogUtils;
 import grab.com.thuexetoancau.driver.utilities.GPSTracker;
 import grab.com.thuexetoancau.driver.utilities.Global;
@@ -78,6 +80,27 @@ public class DriverMapActivity extends AppCompatActivity implements LocationProv
     @Override
     public void onStopUpdate() {
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Defines.REQUEST_LOCATION_ENABLE){
+            GPSTracker gpsTracker = new GPSTracker(this);
+            if (gpsTracker.canGetLocation()) {
+                if (gpsTracker.getLongitude() == 0 && gpsTracker.getLatitude() == 0) {
+                    gpsTracker.getLocationCoodinate(new GPSTracker.LocateListener() {
+                        @Override
+                        public void onLocate(double mlongitude, double mlatitude) {
+                            getCurrentPosition();
+                        }
+                    });
+                } else {
+                    getCurrentPosition();
+                }
+            }else
+                getCurrentPosition();
+        }
     }
 
     @Override

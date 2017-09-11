@@ -22,6 +22,7 @@ import grab.com.thuexetoancau.driver.adapter.BookingLongTripAroundAdapter;
 import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
+import grab.com.thuexetoancau.driver.utilities.CommonUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.DialogUtils;
 import grab.com.thuexetoancau.driver.utilities.GPSTracker;
@@ -46,7 +47,7 @@ public class LongRoadBookFragment extends Fragment implements  SwipeRefreshLayou
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         preference = new SharePreference(getActivity());
         View rootView = inflater.inflate(R.layout.fragment_immediately_book, container, false);
-        ((ListBookingAroundActivity) getActivity()).changeStateListener(new ListBookingAroundActivity.ChangeStateListener() {
+        ((ListBookingAroundActivity) getActivity()).changeStateListenerLongRoad(new ListBookingAroundActivity.ChangeStateListenerLongRoad() {
             @Override
             public void onRefresh() {
                 gpsTracker = new GPSTracker(getActivity());
@@ -147,6 +148,15 @@ public class LongRoadBookFragment extends Fragment implements  SwipeRefreshLayou
     @Override
     public void onRefresh() {
         swipeRefresh.setRefreshing(true);
+        if (!CommonUtilities.isOnline(getActivity())) {
+            DialogUtils.showDialogNetworkError(getActivity(), null);
+            swipeRefresh.setRefreshing(false);
+            return ;
+        }
+        if (preference.getStatus() == 1){
+            swipeRefresh.setRefreshing(false);
+            return;
+        }
         getDataFromServer();
     }
 
