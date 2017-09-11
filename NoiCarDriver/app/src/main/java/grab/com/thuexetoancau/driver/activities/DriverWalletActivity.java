@@ -14,7 +14,7 @@ import grab.com.thuexetoancau.driver.utilities.SharePreference;
 public class DriverWalletActivity extends AppCompatActivity {
     private SharePreference preference;
     private ApiUtilities mApi;
-    private TextView txtMoney;
+    private TextView txtMoney, txtMoneyInMonth;
     private Toolbar toolbar;
 
     @Override
@@ -22,6 +22,7 @@ public class DriverWalletActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_wallet);
         txtMoney = (TextView) findViewById(R.id.txt_money);
+        txtMoneyInMonth = (TextView) findViewById(R.id.txt_money_in_month);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Ví");
@@ -31,8 +32,9 @@ public class DriverWalletActivity extends AppCompatActivity {
         preference = new SharePreference(this);
         mApi.getDriverMoney(preference.getDriverId(), new ApiUtilities.DriverMoneyListener() {
             @Override
-            public void onSuccess(long price) {
-                txtMoney.setText(CommonUtilities.convertRealCurrency((int) price) +" vnđ");
+            public void onSuccess(long money, long moneyInMonth) {
+                txtMoney.setText(CommonUtilities.convertRealCurrency((int) money) +" vnđ");
+                txtMoneyInMonth.setText(CommonUtilities.convertRealCurrency((int) moneyInMonth) +" vnđ");
             }
         });
     }

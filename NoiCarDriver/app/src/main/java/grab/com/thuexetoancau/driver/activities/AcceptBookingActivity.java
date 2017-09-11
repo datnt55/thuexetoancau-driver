@@ -88,7 +88,7 @@ LocationProvide.OnUpdateLocation,
     private ApiUtilities mApi;
     private Button btnFinishTrip;
     private User user;
-   // private LocationProvide locationProvide;
+    private LocationProvide locationProvide;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,7 +121,7 @@ LocationProvide.OnUpdateLocation,
             t.start();
             Global.isStartThread = true;
         }
-       // locationProvide = new LocationProvide(this,this);
+        locationProvide = new LocationProvide(this,this);
     }
 
     private void initComponents(){
@@ -319,7 +319,7 @@ LocationProvide.OnUpdateLocation,
         btnFinishTrip.setVisibility(View.VISIBLE);
         navigation.setVisibility(View.GONE);
         btnFinishTrip.setOnClickListener(this);
-      //  locationProvide.startUpdatesButtonHandler();
+        locationProvide.startUpdatesButtonHandler();
     }
 
     public void showCurrentLocation(View v){
@@ -352,6 +352,9 @@ LocationProvide.OnUpdateLocation,
                         dialog.setCancelable(false);
                         dialog.setOnFinishTripListener(AcceptBookingActivity.this);
                         dialog.show(fragmentManager, "Input Dialog");
+                        locationProvide.stopLocationUpdates();
+                        Global.inTrip = false;
+                        Global.totalDistance = 0;
                     }
                 });
         }
@@ -371,8 +374,6 @@ LocationProvide.OnUpdateLocation,
 
     @Override
     public void onFinishTrip() {
-  //      locationProvide.stopLocationUpdates();
-        Global.inTrip = false;
         SharePreference preference = new SharePreference(this);
         preference.saveStatus(0);
         Intent intent = new Intent(AcceptBookingActivity.this, ListBookingAroundActivity.class);
@@ -389,7 +390,9 @@ LocationProvide.OnUpdateLocation,
 
     @Override
     public void onUpdate(Location mCurrentLocation) {
-     /*   MarkerAnimation.animateMarker(mCurrentLocation,currentLocation);
-        Toast.makeText(this, mCurrentLocation.getLatitude()+","+mCurrentLocation.getLongitude(),Toast.LENGTH_SHORT).show();*/
+        MarkerAnimation.animateMarker(mCurrentLocation,currentLocation);
+        LatLng endPosition = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        Global.totalDistance += CommonUtilities.distanceInMeter(currentLocation.getPosition(),endPosition);
+       // Toast.makeText(this, Global.totalDistance+"",Toast.LENGTH_SHORT).show();
     }
 }

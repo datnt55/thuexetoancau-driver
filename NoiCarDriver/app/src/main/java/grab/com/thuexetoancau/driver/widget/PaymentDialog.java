@@ -35,7 +35,7 @@ import grab.com.thuexetoancau.driver.utilities.SharePreference;
 
 public class PaymentDialog extends DialogFragment implements View.OnClickListener{
     private Button btnFinishTrip;
-    private TextView txtCustomerName, txtDate, txtMoney;
+    private TextView txtCustomerName, txtDate;
     private TextView txtPrice;
     private String customerName, tripDate;
     private int price;
@@ -55,13 +55,13 @@ public class PaymentDialog extends DialogFragment implements View.OnClickListene
         View view = inflater.inflate(R.layout.dialog_bill, container);
         getDialog().setTitle("Thanh toán");
         initComponents(view);
-        ApiUtilities mApi = new ApiUtilities(getActivity());
+       /* ApiUtilities mApi = new ApiUtilities(getActivity());
         mApi.getDriverMoney(preference.getDriverId(), new ApiUtilities.DriverMoneyListener() {
             @Override
             public void onSuccess(long price) {
                 txtMoney.setText(CommonUtilities.convertRealCurrency((int) price) +" vnđ");
             }
-        });
+        });*/
         return view;
     }
 
@@ -74,7 +74,6 @@ public class PaymentDialog extends DialogFragment implements View.OnClickListene
         txtDate = (TextView) view.findViewById(R.id.txt_date);
         txtPrice = (TextView) view.findViewById(R.id.txt_price);
         btnFinishTrip = (Button) view.findViewById(R.id.btn_end_trip);
-        txtMoney= (TextView) view.findViewById(R.id.txt_money);
         txtCustomerName.setText(customerName);
         txtDate.setText(tripDate);
         txtPrice.setText(CommonUtilities.convertCurrency(price) +" vnđ");

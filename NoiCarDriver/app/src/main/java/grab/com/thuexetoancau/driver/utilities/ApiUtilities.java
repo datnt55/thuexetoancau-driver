@@ -545,8 +545,9 @@ public class ApiUtilities {
                         JSONArray array = json.getJSONArray("data");
                         JSONObject data = array.getJSONObject(0);
                         long money = data.getLong("total_money");
+                        long moneyInMonth = data.getLong("total_discount");
                         if (listener != null)
-                            listener.onSuccess(money);
+                            listener.onSuccess(money, moneyInMonth);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -774,7 +775,7 @@ public class ApiUtilities {
     }
 
     public interface DriverMoneyListener {
-        void onSuccess(long price);
+        void onSuccess(long price, long moneyInMonth);
     }
 
 }
