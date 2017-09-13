@@ -82,6 +82,7 @@ public class ScheduleTripActivity extends AppCompatActivity implements ScheduleT
     @Override
     public void onItemClicked(final Trip trip) {
         Intent intent = new Intent(mContext, AcceptBookingActivity.class);
+        trip.setStatus(Defines.BOOKING_WELCOME_CUSTOMER);
         intent.putExtra(Defines.BUNDLE_TRIP,trip);
         startActivity(intent);
         ((Activity)mContext).finish();

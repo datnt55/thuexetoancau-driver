@@ -9,15 +9,19 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,7 +75,8 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         View.OnClickListener,
         PaymentDialog.BillSuccessListenr,
         DirectionFinderListener,
-LocationProvide.OnUpdateLocation,
+        NavigationView.OnNavigationItemSelectedListener,
+        LocationProvide.OnUpdateLocation,
         OnMapReadyCallback{
 
     private GoogleMap mMap;
@@ -88,13 +93,15 @@ LocationProvide.OnUpdateLocation,
     private ApiUtilities mApi;
     private Button btnFinishTrip;
     private User user;
+    private TextView txtName, txtEmail;
     private LocationProvide locationProvide;
+    private SharePreference preference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accept_booking);
         mContext = this;
-        SharePreference preference = new SharePreference(this);
+        preference = new SharePreference(this);
         preference.saveStatus(1);
         mApi = new ApiUtilities(this);
         if (getIntent().hasExtra(Defines.BUNDLE_TRIP)) {
@@ -121,7 +128,6 @@ LocationProvide.OnUpdateLocation,
             t.start();
             Global.isStartThread = true;
         }
-        locationProvide = new LocationProvide(this,this);
     }
 
     private void initComponents(){
@@ -143,7 +149,41 @@ LocationProvide.OnUpdateLocation,
             txtNote.setText(customerTrip.getNote());
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Chi tiết chuyến đi");
+        if (customerTrip.getStatus() == Defines.BOOKING_IN_PROGRESS)
+            getSupportActionBar().setTitle("Đang trong chuyến đi");
+        else if (customerTrip.getStatus() == Defines.BOOKING_WELCOME_CUSTOMER)
+            getSupportActionBar().setTitle("Đang trên đường đón khách");
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        txtName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.txt_name);
+        txtEmail = (TextView) navigationView.getHeaderView(0).findViewById(R.id.txt_email);
+        ImageView imgEdit = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.img_edit);
+        ImageView imgAvatar = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.avatar);
+        imgAvatar.setImageResource(R.drawable.driver);
+        if (getIntent().hasExtra(Defines.BUNDLE_USER)) {
+            user = (User) getIntent().getSerializableExtra(Defines.BUNDLE_USER);
+            txtName.setText(user.getName());
+            if (!user.getEmail().equals("null"))
+                txtEmail.setText(user.getEmail());
+            else
+                txtEmail.setText("");
+        } else {
+            txtName.setText(preference.getName());
+            txtEmail.setText("");
+        }
+        imgEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext,ConfigureAccountActivity.class);
+                startActivityForResult(intent, Defines.CONFIGURE_CODE);
+            }
+        });
     }
 
     @Override
@@ -165,6 +205,8 @@ LocationProvide.OnUpdateLocation,
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         getCurrentPosition();
+        locationProvide = new LocationProvide(this,this);
+        locationProvide.startUpdatesButtonHandler();
     }
 
     private void getCurrentPosition() {
@@ -283,6 +325,37 @@ LocationProvide.OnUpdateLocation,
             case R.id.navigation_welcome:
                 goToReceiveCustomer();
                 break;
+            case R.id.nav_history:
+                Intent intentHisroty = new Intent(mContext, HistoryTripActivity.class);
+                intentHisroty.putExtra(Defines.BUNDLE_USER, preference.getDriverId());
+                startActivity(intentHisroty);
+                break;
+            case R.id.nav_log_out:
+                DialogUtils.showLoginDialog((Activity) mContext, new DialogUtils.YesNoListenter() {
+                    @Override
+                    public void onYes() {
+                        SharePreference preference = new SharePreference(mContext);
+                        preference.saveDriverId(0);
+                        Intent intent = new Intent(mContext, SplashActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
+                    @Override
+                    public void onNo() {
+
+                    }
+                });
+                break;
+            case R.id.nav_schedule:
+                Intent schedule = new Intent(mContext, ScheduleTripActivity.class);
+                startActivity(schedule);
+                break;
+
+            case R.id.nav_wallet:
+                Intent wallet = new Intent(mContext, DriverWalletActivity.class);
+                startActivity(wallet);
+                break;
         }
 
         return true;
@@ -319,7 +392,9 @@ LocationProvide.OnUpdateLocation,
         btnFinishTrip.setVisibility(View.VISIBLE);
         navigation.setVisibility(View.GONE);
         btnFinishTrip.setOnClickListener(this);
-        locationProvide.startUpdatesButtonHandler();
+        SharePreference preference = new SharePreference(mContext);
+        mApi.catchCustomer(customerTrip.getId(), preference.getDriverId(),null);
+        toolbar.setTitle("Đang trong chuyến đi");
     }
 
     public void showCurrentLocation(View v){
@@ -392,7 +467,8 @@ LocationProvide.OnUpdateLocation,
     public void onUpdate(Location mCurrentLocation) {
         MarkerAnimation.animateMarker(mCurrentLocation,currentLocation);
         LatLng endPosition = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-        Global.totalDistance += CommonUtilities.distanceInMeter(currentLocation.getPosition(),endPosition);
-       // Toast.makeText(this, Global.totalDistance+"",Toast.LENGTH_SHORT).show();
+        if (Global.inTrip)
+            Global.totalDistance += CommonUtilities.distanceInMeter(currentLocation.getPosition(),endPosition);
+       //Toast.makeText(this, Global.totalDistance+"",Toast.LENGTH_SHORT).show();
     }
 }

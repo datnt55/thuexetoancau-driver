@@ -142,6 +142,7 @@ public class AcceptBookDialog extends DialogFragment implements View.OnClickList
                 AcceptBookDialog.this.dismissAllowingStateLoss();
                 SharePreference preference = new SharePreference(getActivity());
                 preference.saveStatus(1);
+                trip.setStatus(Defines.BOOKING_WELCOME_CUSTOMER);
                 Intent intent = new Intent(mContext, AcceptBookingActivity.class);
                 trip.setCustomerName(user.getName());
                 trip.setCustomerPhone(user.getPhone());

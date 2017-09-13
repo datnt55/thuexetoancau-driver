@@ -40,7 +40,7 @@ tools:openDrawer="start">
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-    <android.support.design.widget.FloatingActionButton
+  <!--  <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,7 +52,7 @@ tools:openDrawer="start">
         app:backgroundTint="@color/yellow"
         android:onClick="goToMapListener"
         android:scaleType="center"
-        app:srcCompat="@drawable/map_icon" />
+        app:srcCompat="@drawable/map_icon" />-->
 </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView

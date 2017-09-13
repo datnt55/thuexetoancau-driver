@@ -23,6 +23,7 @@ public class Defines {
     public static  final String URL_GET_CAR_MADE            = HOSTNAME + "api/getCarMadeList";
     public static  final String URL_GET_CAR_MODEL           = HOSTNAME + "api/getCarModelListFromMade";
     public static  final String URL_GET_HISTORY             = HOSTNAME + "api2/getHistoryTripForDriver";
+    public static  final String URL_CATCH_CUSTOMER          = HOSTNAME + "api2/CatchTrip";
     public static  final String URL_GET_MONEY               = HOSTNAME + "api2/getMoneyForDriver";
     public static  final String URL_BOOKING_LOG             = HOSTNAME + "api/bookingLog";
     public static  final String URL_GET_CAR_SIZE            = HOSTNAME + "api/getCarSize";
@@ -84,5 +85,9 @@ public class Defines {
 
     // Notification tag
     public static final String NOTIFY_TAG = "notify tag";
+
+    public static final int BOOKING_IN_PROGRESS = 99 ;
+    public static final int BOOKING_WELCOME_CUSTOMER = 1 ;
+
 
 }

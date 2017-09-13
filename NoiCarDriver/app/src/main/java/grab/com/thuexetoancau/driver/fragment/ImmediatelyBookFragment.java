@@ -168,6 +168,7 @@ public class ImmediatelyBookFragment extends Fragment implements  SwipeRefreshLa
                     @Override
                     public void onSuccess(User user) {
                         Intent intent = new Intent(getActivity(), AcceptBookingActivity.class);
+                        trip.setStatus(Defines.BOOKING_WELCOME_CUSTOMER);
                         trip.setCustomerName(user.getName());
                         trip.setCustomerPhone(user.getPhone());
                         intent.putExtra(Defines.BUNDLE_TRIP,trip);

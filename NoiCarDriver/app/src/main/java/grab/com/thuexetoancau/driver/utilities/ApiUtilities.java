@@ -288,6 +288,7 @@ public class ApiUtilities {
                 Position position = new Position(arrEndPointName[i], new LatLng(lat, lon));
                 listStopPoint.add(position);
             }
+            int status = booking.getInt("status_booking");
             trip = new Trip(id, useId, listStopPoint, carSize, isOneWay, distance, price, startTime, backTime, isMineTrip, customerName, customerPhone, guestName, guestPhone, note);
             trip.setBookingDateId(bookDateId);
             trip.setBookingTime(bookingTime);
@@ -297,6 +298,7 @@ public class ApiUtilities {
             trip.setCarType(carType);
             trip.setRealDistance(realDistance);
             trip.setRealPrice(realPrice);
+            trip.setStatus(status);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -721,6 +723,65 @@ public class ApiUtilities {
                     if (listener != null)
                         listener.onSuccess(null);
                 }
+            }
+
+            @Override
+            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.network_error), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+                // called when request is retried
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.network_error), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void catchCustomer(int bookingId,int driverId, final ResponseTripListener listener){
+        if (!CommonUtilities.isOnline(mContext)) {
+            DialogUtils.showDialogNetworkError(mContext, null);
+            return ;
+        }
+        RequestParams params;
+        params = new RequestParams();
+        params.put("id_booking", bookingId);
+        params.put("driver_id", driverId);
+        Log.e("TAG",params.toString());
+        BaseService.getHttpClient().post(Defines.URL_CATCH_CUSTOMER,params, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+                // called when response HTTP status is "200 OK"
+                String x = new String(responseBody);
+                Log.i("JSON", new String(responseBody));
+
+                /*try {
+                    JSONObject json = new JSONObject(new String(responseBody));
+                    if (json.getString("status").equals("success")){
+                        ArrayList<Trip> arrayTrip = new ArrayList<Trip>();
+                        JSONArray array = json.getJSONArray("data");
+                        JSONObject data = array.getJSONObject(0);
+                        JSONArray bookingList = data.getJSONArray("list");
+                        for (int i = 0 ; i < bookingList.length(); i++) {
+                            JSONObject booking = bookingList.getJSONObject(i);
+                            Trip trip = parseBookingData(booking);
+                            arrayTrip.add(trip);
+                        }
+                        if (listener != null)
+                            listener.onSuccess(arrayTrip);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    if (listener != null)
+                        listener.onSuccess(null);
+                }*/
             }
 
             @Override

@@ -33,6 +33,7 @@ import com.loopj.android.http.RequestParams;
 
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.adapter.ViewPagerAdapter;
+import grab.com.thuexetoancau.driver.fragment.DriverMapFragment;
 import grab.com.thuexetoancau.driver.fragment.ImmediatelyBookFragment;
 import grab.com.thuexetoancau.driver.fragment.LongRoadBookFragment;
 import grab.com.thuexetoancau.driver.model.Trip;
@@ -231,6 +232,7 @@ public class ListBookingAroundActivity extends AppCompatActivity implements Navi
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFrag(new DriverMapFragment(), "Bản đồ");
         adapter.addFrag(new ImmediatelyBookFragment(), "Chuyến đi ngay");
         adapter.addFrag(new LongRoadBookFragment(), "Chuyến đi sau");
         viewPager.setAdapter(adapter);

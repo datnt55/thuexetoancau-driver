@@ -32,6 +32,7 @@ public class Trip implements Serializable{
     private int carType;
     private int realDistance;
     private int realPrice;
+    private int status;
 
     public Trip(int id, int userId, ArrayList<Position> listStopPoints, int carSize, int tripType, int distance, int price, String startTime, String endTime, int customerType, String customerName, String customerPhone, String guestName, String guestPhone, String note) {
         this.id = id;
@@ -259,5 +260,13 @@ public class Trip implements Serializable{
 
     public void setRealPrice(int realPrice) {
         this.realPrice = realPrice;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }
