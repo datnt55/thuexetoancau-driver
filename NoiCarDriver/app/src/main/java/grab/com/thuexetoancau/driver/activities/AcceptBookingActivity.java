@@ -149,9 +149,13 @@ public class AcceptBookingActivity extends AppCompatActivity implements
             txtNote.setText(customerTrip.getNote());
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if (customerTrip.getStatus() == Defines.BOOKING_IN_PROGRESS)
+        if (customerTrip.getStatus() == Defines.BOOKING_IN_PROGRESS) {
             getSupportActionBar().setTitle("Đang trong chuyến đi");
-        else if (customerTrip.getStatus() == Defines.BOOKING_WELCOME_CUSTOMER)
+            Global.inTrip = true;
+            btnFinishTrip.setVisibility(View.VISIBLE);
+            navigation.setVisibility(View.GONE);
+            btnFinishTrip.setOnClickListener(this);
+        } else if (customerTrip.getStatus() == Defines.BOOKING_WELCOME_CUSTOMER)
             getSupportActionBar().setTitle("Đang trên đường đón khách");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
