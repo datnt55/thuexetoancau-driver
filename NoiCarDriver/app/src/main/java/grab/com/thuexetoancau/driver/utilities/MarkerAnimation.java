@@ -4,8 +4,11 @@ import android.animation.ValueAnimator;
 import android.location.Location;
 import android.view.animation.LinearInterpolator;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+
+import grab.com.thuexetoancau.driver.R;
 
 /**
  * Created by DatNT on 8/31/2017.
@@ -21,7 +24,7 @@ public class MarkerAnimation {
 
             final LatLngInterpolator latLngInterpolator = new LatLngInterpolator.LinearFixed();
             ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1);
-            valueAnimator.setDuration(1000); // duration 1 second
+            valueAnimator.setDuration(3000); // duration 1 second
             valueAnimator.setInterpolator(new LinearInterpolator());
             valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override public void onAnimationUpdate(ValueAnimator animation) {
@@ -29,7 +32,14 @@ public class MarkerAnimation {
                         float v = animation.getAnimatedFraction();
                         LatLng newPosition = latLngInterpolator.interpolate(v, startPosition, endPosition);
                         marker.setPosition(newPosition);
-                        marker.setRotation(computeRotation(v, startRotation, destination.getBearing()));
+                        float angle = computeRotation(v, startRotation, destination.getBearing());
+                        if (angle > 180){
+                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.car));
+                            marker.setRotation(angle-180);
+                        }else if (angle <= 180 && angle >= 160) {
+                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.car));
+                        }else
+                            marker.setRotation(angle);
                     } catch (Exception ex) {
                         // I don't care atm..
                     }
