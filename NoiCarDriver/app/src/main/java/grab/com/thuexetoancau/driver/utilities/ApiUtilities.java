@@ -33,6 +33,54 @@ public class ApiUtilities {
         this.mContext = mContext;
     }
 
+    public void getCurrentTime(final ServerTimeListener listener){
+        if (!CommonUtilities.isOnline(mContext)) {
+            DialogUtils.showDialogNetworkError(mContext, null);
+            return ;
+        }
+        BaseService.getHttpClient().get(Defines.URL_GET_SERVER_TIME, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+                // called when response HTTP status is "200 OK"
+                Log.i("JSON", new String(responseBody));
+                try {
+                    JSONObject jsonObject = new JSONObject(new String(responseBody));
+                    String status = jsonObject.getString("status");
+                    if (status.equals("success")){
+                        JSONArray array = jsonObject.getJSONArray("data");
+                        JSONObject data = array.getJSONObject(0);
+                        long serverTime = data.getLong("TotalMilliseconds");
+                        if (listener != null)
+                            listener.onSuccess(serverTime);
+                    }else{
+                        Toast.makeText(mContext, mContext.getResources().getString(R.string.error_network), Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.network_error), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+                // called when request is retried
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.network_error), Toast.LENGTH_SHORT).show();
+            }
+        });
+        return;
+    }
+
     public void login(final String phone, final String pass, final ProgressDialog dialog, final LoginResponseListener listener) {
         if (!CommonUtilities.isOnline(mContext)) {
             DialogUtils.showDialogNetworkError(mContext, null);
@@ -798,6 +846,44 @@ public class ApiUtilities {
         });
     }
 
+    public void postGPS(double lon,double lat,long bookingId){
+        RequestParams params;
+        params = new RequestParams();
+        params.put("lon", lon);
+        params.put("lat", lat);
+        params.put("id_booking", bookingId);
+        DateTime current = new DateTime();
+        long key = (current.getMillis() + Global.serverTimeDiff)*13 + 27;
+        params.put("key", key);
+        Log.e("TAG",params.toString());
+        BaseService.getHttpClient().post(Defines.URL_AUTO_POST_GPS,params, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+                // called when response HTTP status is "200 OK"
+                String x = new String(responseBody);
+                Log.i("JSON", new String(responseBody));
+            }
+
+            @Override
+            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.network_error), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+                // called when request is retried
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.network_error), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     public interface ResponseTripListener {
         void onSuccess(ArrayList<Trip> arrayTrip);
     }
@@ -839,4 +925,7 @@ public class ApiUtilities {
         void onSuccess(long price, long moneyInMonth);
     }
 
+    public interface ServerTimeListener{
+        void onSuccess(long time);
+    }
 }

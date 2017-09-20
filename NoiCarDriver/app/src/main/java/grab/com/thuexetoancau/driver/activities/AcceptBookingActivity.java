@@ -473,6 +473,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         LatLng endPosition = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         if (Global.inTrip)
             Global.totalDistance += CommonUtilities.distanceInMeter(currentLocation.getPosition(),endPosition);
+        mApi.postGPS(mCurrentLocation.getLongitude(), mCurrentLocation.getLatitude(),customerTrip.getId());
        //Toast.makeText(this, Global.totalDistance+"",Toast.LENGTH_SHORT).show();
     }
 }

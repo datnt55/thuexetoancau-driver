@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
  */
 public class Defines {
     public static  final String HOSTNAME                        = "http://thuexetoancau.vn/";
+    public static  final String URL_GET_SERVER_TIME             = HOSTNAME + "api2/getServerTime";
     public static  final String URL_REGISTER                    = HOSTNAME + "api/driverRegister";
     public static  final String URL_POST_DRIVER_GPS             = HOSTNAME + "api/postDriverGPS";
     public static  final String URL_LOGIN                       = HOSTNAME + "api/login";
@@ -24,6 +25,7 @@ public class Defines {
     public static  final String URL_GET_CAR_MODEL           = HOSTNAME + "api/getCarModelListFromMade";
     public static  final String URL_GET_HISTORY             = HOSTNAME + "api2/getHistoryTripForDriver";
     public static  final String URL_CATCH_CUSTOMER          = HOSTNAME + "api2/CatchTrip";
+    public static  final String URL_AUTO_POST_GPS           = HOSTNAME + "api2/autoPostGpsToCustomer";
     public static  final String URL_GET_MONEY               = HOSTNAME + "api2/getMoneyForDriver";
     public static  final String URL_BOOKING_LOG             = HOSTNAME + "api/bookingLog";
     public static  final String URL_GET_CAR_SIZE            = HOSTNAME + "api/getCarSize";

@@ -1,5 +1,6 @@
 package grab.com.thuexetoancau.driver.activities;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -19,13 +21,17 @@ import android.widget.LinearLayout;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.joda.time.DateTime;
+
 import grab.com.thuexetoancau.driver.R;
 import grab.com.thuexetoancau.driver.model.Trip;
 import grab.com.thuexetoancau.driver.model.User;
 import grab.com.thuexetoancau.driver.utilities.ApiUtilities;
+import grab.com.thuexetoancau.driver.utilities.CommonUtilities;
 import grab.com.thuexetoancau.driver.utilities.Defines;
 import grab.com.thuexetoancau.driver.utilities.DialogUtils;
 import grab.com.thuexetoancau.driver.utilities.GPSTracker;
+import grab.com.thuexetoancau.driver.utilities.Global;
 import grab.com.thuexetoancau.driver.utilities.PermissionUtils;
 import grab.com.thuexetoancau.driver.utilities.SharePreference;
 
@@ -36,6 +42,8 @@ public class SplashActivity extends AppCompatActivity {
     private ImageView imgLoading;
     private Context mContext;
     private GPSTracker gpsTracker;
+    private ApiUtilities mApi;
+    private LinearLayout layoutLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +53,7 @@ public class SplashActivity extends AppCompatActivity {
             // w.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
         super.onCreate(savedInstanceState);
+        mApi = new ApiUtilities(this);
         if (PermissionUtils.checkAndRequestPermissions(this)){
             initComponents();
         }
@@ -52,31 +61,51 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void initComponents() {
-        gpsTracker = new GPSTracker(this);
-        if (!gpsTracker.canGetLocation()) {
-            DialogUtils.settingRequestTurnOnLocation(this);
-            return;
-        }
         setContentView(R.layout.activity_splash);
         mContext = this;
         preference = new SharePreference(this);
         imgLoading = (ImageView) findViewById(R.id.img_loading);
+        layoutLoading = (LinearLayout) findViewById(R.id.layout_loading);
         AnimationDrawable frameAnimation = (AnimationDrawable) imgLoading.getBackground();
         frameAnimation.start();
         FirebaseInstanceId.getInstance().getToken();
         FirebaseMessaging.getInstance().subscribeToTopic("test");
-        if (preference.getRegId().equals("")) {
-            LocalBroadcastManager.getInstance(this).registerReceiver(tokenReceiver, new IntentFilter("tokenReceiver"));
-        }else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    goToApplication();
-                }
-            }, 2000);
-        }
+        checkOnline();
     }
 
+    private void checkOnline() {
+        if (!CommonUtilities.isOnline(this)){
+            DialogUtils.showDialogNetworkError(this, new DialogUtils.TryAgain() {
+                @Override
+                public void onTryAgain() {
+                    checkOnline();
+                }
+            });
+            return;
+        }
+
+        mApi.getCurrentTime(new ApiUtilities.ServerTimeListener() {
+            @Override
+            public void onSuccess(long time) {
+                DateTime current = new DateTime();
+                Global.serverTimeDiff = time - current.getMillis();
+                layoutLoading.setVisibility(View.VISIBLE);
+                if (preference.getRegId().equals("")) {
+                    LocalBroadcastManager.getInstance(mContext).registerReceiver(tokenReceiver, new IntentFilter("tokenReceiver"));
+                }else {
+                    GPSTracker gpsTracker = new GPSTracker(mContext);
+                    if (gpsTracker.handlePermissionsAndGetLocation()) {
+                        if (!gpsTracker.canGetLocation()) {
+                            DialogUtils.settingRequestTurnOnLocation((Activity)mContext);
+                        } else
+                            goToApplication();
+                    }
+
+
+                }
+            }
+        });
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -128,14 +157,14 @@ public class SplashActivity extends AppCompatActivity {
                     gpsTracker.getLocationCoodinate(new GPSTracker.LocateListener() {
                         @Override
                         public void onLocate(double mlongitude, double mlatitude) {
-                            initComponents();
+                            goToApplication();
                         }
                     });
                 } else {
-                    initComponents();
+                    goToApplication();
                 }
             }else
-                initComponents();
+                DialogUtils.settingRequestTurnOnLocation((Activity)mContext);
         }
     }
 
