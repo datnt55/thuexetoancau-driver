@@ -376,6 +376,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
                     public void onSuccess() {
                         Global.inTrip = false;
                         preference.saveStatus(0);
+                        locationProvide.stopLocationUpdates();
                         Intent intent = new Intent(AcceptBookingActivity.this, ListBookingAroundActivity.class);
                         startActivity(intent);
                         finish();
