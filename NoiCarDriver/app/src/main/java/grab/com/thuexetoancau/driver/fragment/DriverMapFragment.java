@@ -69,7 +69,12 @@ public class DriverMapFragment extends Fragment implements LocationProvide.OnUpd
         layoutFixGps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showCurrentLocationToMap(gpsTracker.getLatitude(), gpsTracker.getLongitude());
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(currentLocation.getPosition())             // Sets the center of the map to current location
+                        .zoom(16)                   // Sets the zoom
+                        .tilt(45)                   // Sets the tilt of the camera to 0 degrees
+                        .build();                   // Creates BookingLongTripAroundAdapter CameraPosition from the builder
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         });
         SupportMapFragment map = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.driver_map);
