@@ -32,10 +32,12 @@ public class DriverMapActivity extends AppCompatActivity implements LocationProv
     private GPSTracker gpsTracker;
     private Marker currentLocation;
     private Toolbar toolbar;
+    private  MarkerAnimation animation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_map);
+        animation = new MarkerAnimation(this);
         SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         map.getMapAsync(this);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -105,7 +107,7 @@ public class DriverMapActivity extends AppCompatActivity implements LocationProv
 
     @Override
     public void onUpdate(Location mCurrentLocation) {
-        MarkerAnimation.animateMarker(mCurrentLocation,currentLocation);
+        animation.animateMarker(mCurrentLocation,currentLocation);
     }
 
     @Override

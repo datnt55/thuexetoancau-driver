@@ -96,6 +96,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
     private TextView txtName, txtEmail;
     private LocationProvide locationProvide;
     private SharePreference preference;
+    private  MarkerAnimation animation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +105,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
         preference = new SharePreference(this);
         preference.saveStatus(1);
         mApi = new ApiUtilities(this);
+        animation = new MarkerAnimation(this);
         if (getIntent().hasExtra(Defines.BUNDLE_TRIP)) {
             customerTrip = (Trip) getIntent().getSerializableExtra(Defines.BUNDLE_TRIP);
         }
@@ -470,7 +472,7 @@ public class AcceptBookingActivity extends AppCompatActivity implements
 
     @Override
     public void onUpdate(Location mCurrentLocation) {
-        MarkerAnimation.animateMarker(mCurrentLocation,currentLocation);
+        animation.animateMarker(mCurrentLocation,currentLocation);
         LatLng endPosition = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         if (Global.inTrip)
             Global.totalDistance += CommonUtilities.distanceInMeter(currentLocation.getPosition(),endPosition);

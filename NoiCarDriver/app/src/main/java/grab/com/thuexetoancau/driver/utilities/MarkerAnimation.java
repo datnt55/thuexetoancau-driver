@@ -1,7 +1,14 @@
 package grab.com.thuexetoancau.driver.utilities;
 
 import android.animation.ValueAnimator;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Location;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -10,15 +17,23 @@ import com.google.android.gms.maps.model.Marker;
 
 import grab.com.thuexetoancau.driver.R;
 
+
 /**
  * Created by DatNT on 8/31/2017.
  */
 
 public class MarkerAnimation {
-    public static void animateMarker(final Location destination, final Marker marker) {
+    private  LatLng prevLatLng, currLatLng, nextLatLng;
+    private Context mContext;
+
+    public MarkerAnimation(Context mContext) {
+        this.mContext = mContext;
+    }
+
+    public  void animateMarker(final Location destination, final Marker marker) {
         if (marker != null) {
-            final LatLng startPosition = marker.getPosition();
-            final LatLng endPosition = new LatLng(destination.getLatitude(), destination.getLongitude());
+            currLatLng = marker.getPosition();
+            nextLatLng = new LatLng(destination.getLatitude(), destination.getLongitude());
 
             final float startRotation = marker.getRotation();
 
@@ -30,24 +45,72 @@ public class MarkerAnimation {
                 @Override public void onAnimationUpdate(ValueAnimator animation) {
                     try {
                         float v = animation.getAnimatedFraction();
-                        LatLng newPosition = latLngInterpolator.interpolate(v, startPosition, endPosition);
+                        LatLng newPosition = latLngInterpolator.interpolate(v, currLatLng, nextLatLng);
                         marker.setPosition(newPosition);
                         float angle = computeRotation(v, startRotation, destination.getBearing());
-            /*            if (angle > 180){
+                     /*   if (angle > 180){
                             marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.car));
                             marker.setRotation(angle-180);
                         }else if (angle <= 180 && angle >= 160) {
                             marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.car));
                         }else*/
-                            marker.setRotation(angle);
+                        marker.setRotation(angle);
                     } catch (Exception ex) {
                         // I don't care atm..
                     }
                 }
             });
-
             valueAnimator.start();
+            float beginAngle;
+            if (prevLatLng != null)
+                beginAngle = (float)(180 * getAngle(prevLatLng, currLatLng) / Math.PI);
+            else
+                beginAngle = (float)(180 * getAngle(currLatLng, nextLatLng) / Math.PI);
+            float endAngle = (float)(180 * getAngle(currLatLng, nextLatLng) / Math.PI);
+            animateCarTurn(mContext, marker,beginAngle,endAngle,1000);
         }
+    }
+
+    private double getAngle(LatLng beginLatLng, LatLng endLatLng) {
+        double f1 = Math.PI * beginLatLng.latitude / 180;
+        double f2 = Math.PI * endLatLng.latitude / 180;
+        double dl = Math.PI * (endLatLng.longitude - beginLatLng.longitude) / 180;
+        return Math.atan2(Math.sin(dl) * Math.cos(f2) , Math.cos(f1) * Math.sin(f2) - Math.sin(f1) * Math.cos(f2) * Math.cos(dl));
+    }
+
+    private void animateCarTurn(Context mContext, final Marker marker, final float startAngle, final float endAngle, final long duration) {
+        final Bitmap mMarkerIcon;
+        mMarkerIcon = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.car);
+
+        final Handler handler = new Handler();
+        final long startTime = SystemClock.uptimeMillis();
+        final Interpolator interpolator = new LinearInterpolator();
+
+        final float dAndgle = endAngle - startAngle;
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(startAngle);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(mMarkerIcon, 0, 0, mMarkerIcon.getWidth(), mMarkerIcon.getHeight(), matrix, true);
+        marker.setIcon(BitmapDescriptorFactory.fromBitmap(rotatedBitmap));
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+
+                long elapsed = SystemClock.uptimeMillis() - startTime;
+                float t = interpolator.getInterpolation((float) elapsed / duration);
+
+                Matrix m = new Matrix();
+                m.postRotate(startAngle + dAndgle * t);
+                marker.setIcon(BitmapDescriptorFactory.fromBitmap(Bitmap.createBitmap(mMarkerIcon, 0, 0, mMarkerIcon.getWidth(), mMarkerIcon.getHeight(), m, true)));
+
+                if (t < 1.0) {
+                    handler.postDelayed(this, 16);
+                }else{
+                    prevLatLng = marker.getPosition();
+                }
+            }
+        });
     }
 
     /**
@@ -90,5 +153,6 @@ public class MarkerAnimation {
                 return new LatLng(lat, lng);
             }
         }
+
     }
 }

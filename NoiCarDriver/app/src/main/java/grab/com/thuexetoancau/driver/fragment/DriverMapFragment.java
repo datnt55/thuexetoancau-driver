@@ -52,6 +52,7 @@ public class DriverMapFragment extends Fragment implements LocationProvide.OnUpd
     private GPSTracker gpsTracker;
     private Marker currentLocation;
     private FrameLayout layoutFixGps;
+    private MarkerAnimation animation ;
     private static View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,6 +66,7 @@ public class DriverMapFragment extends Fragment implements LocationProvide.OnUpd
         } catch (InflateException e) {
         /* map is already there, just return view as it is */
         }
+        animation = new MarkerAnimation(getActivity());
         layoutFixGps = (FrameLayout) view.findViewById(R.id.fix_gps);
         layoutFixGps.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,6 +131,6 @@ public class DriverMapFragment extends Fragment implements LocationProvide.OnUpd
 
     @Override
     public void onUpdate(Location mCurrentLocation) {
-        MarkerAnimation.animateMarker(mCurrentLocation,currentLocation);
+        animation.animateMarker(mCurrentLocation,currentLocation);
     }
 }
